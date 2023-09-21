@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CustomerService } from './customer/customer.service';
-import { DeliveryOrderService } from './delivery-order/delivery-order.service';
-import { DeliveryOrderTrackingService } from './delivery-order-tracking/delivery-order-tracking.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
 import { CustomerModule } from './customer/customer.module';

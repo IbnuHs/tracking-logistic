@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeliveryOrder } from 'src/delivery-order/entity/delivery-order.entity';
 import { Repository } from 'typeorm';
 import { Customer } from './entity/customer.entity';
 

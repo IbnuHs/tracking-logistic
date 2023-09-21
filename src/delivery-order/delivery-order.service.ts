@@ -1,9 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common/enums';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CustomerService } from 'src/customer/customer.service';
-import { Customer } from 'src/customer/entity/customer.entity';
-import { createQueryBuilder, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { FindOrderDto } from './dto/deliveryOrder.dto';
 import { DeliveryOrder } from './entity/delivery-order.entity';
 
