@@ -5,10 +5,10 @@ export class DeliveryOrderTracking {
   @PrimaryColumn({ type: 'int', nullable: false })
   Id: number;
 
-  @Column({ type: 'varchar', length: '40' })
+  @Column({ type: 'varchar', length: '40', nullable: false })
   OrderNo: string;
 
-  @Column({ type: 'varchar', length: '30' })
+  @Column({ type: 'varchar', length: '30', nullable: false })
   Status: string;
 
   @Column({ type: 'text' })
