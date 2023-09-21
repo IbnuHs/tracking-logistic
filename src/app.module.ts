@@ -20,18 +20,12 @@ import { DeliveryOrderTrackingModule } from './delivery-order-tracking/delivery-
       password: '',
       autoLoadEntities: true,
       synchronize: true,
-      
     }),
     DeliveryOrderModule,
     CustomerModule,
     DeliveryOrderTrackingModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    CustomerService,
-    DeliveryOrderService,
-    DeliveryOrderTrackingService,
-  ],
+  providers: [AppService, CustomerService, DeliveryOrderService],
 })
 export class AppModule {}

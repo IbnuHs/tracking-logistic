@@ -27,6 +27,9 @@ export class DeliveryOrder {
   Customer: string;
 
   @Column({ type: 'varchar', length: '100' })
+  Orides: string;
+
+  @Column({ type: 'varchar', length: '100' })
   Receiver: string;
 
   @Column({ type: 'varchar', length: '100' })
