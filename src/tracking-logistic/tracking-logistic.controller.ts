@@ -1,6 +1,7 @@
 import { Controller, Get, Body } from '@nestjs/common';
 import { DeliveryOrderDto } from './dto/delivery-tracking.dto';
 import { TrackingLogisticService } from './tracking-logistic.service';
+import { TrackingAndShipmentDto } from './dto/trackingAndShipment-dto';
 
 @Controller('tracking-logistic')
 export class TrackingLogisticController {
@@ -14,4 +15,16 @@ export class TrackingLogisticController {
       deliveryOrderDto,
     );
   }
+
+  @Get('trackingAndShipment')
+  trackingOrder(@Body() trackingAndShipmentDto: TrackingAndShipmentDto) {
+    return this.trackingLogisticService.TrackingAndShipmentinfo(
+      trackingAndShipmentDto,
+    );
+  }
+
+  // @Get('shipmentInfo')
+  // shipmentInfo(@Body() deliveryOrderDto: DeliveryOrderDto) {
+  //   return this.trackingLogisticService.getShipmentInfo(deliveryOrderDto);
+  // }
 }
