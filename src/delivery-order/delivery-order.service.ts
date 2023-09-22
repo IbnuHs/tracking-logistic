@@ -20,19 +20,10 @@ export class DeliveryOrderService {
       where: {
         OrderNo: orderDto.OrderId,
       },
+      relations: {
+        customer: true,
+      },
     });
-
-    // const customer = this.DeliveryOrderRepository.createQueryBuilder('customer','c')
-    //   .innerJoinAndSelect('c.order')
-    //   .getMany();
-
-    // console.log(await customer);
-
-    const dataCustomer = await this.customerService.getCustomer(
-      dataDeliveryOrder.CustomerId,
-    );
-
-    console.log(dataDeliveryOrder.customerData);
 
     if (!dataDeliveryOrder) {
       return {
@@ -43,9 +34,14 @@ export class DeliveryOrderService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Data Delivery Order ditemukan!',
+      message: 'Data Order Detail ditemukan!',
       data: {
-        dataDeliveryOrder: { ...dataDeliveryOrder, dataCustomer: dataCustomer },
+        orderNo: dataDeliveryOrder.OrderNo,
+        customerId: dataDeliveryOrder.customer.CustomerId,
+        customerName: dataDeliveryOrder.customer.Customer,
+        customerAddress: dataDeliveryOrder.customer.Address,
+        receiverName: dataDeliveryOrder.Receiver,
+        receiverAddress: dataDeliveryOrder.ReceiverAddress,
       },
     };
   }
