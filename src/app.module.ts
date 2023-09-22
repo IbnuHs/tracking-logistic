@@ -23,9 +23,11 @@ import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.mo
     SendAccessCodeModule,
     TrackingLogisticModule,
   ],
-  controllers: [AppController],
+  controllers: [
+    // AppController
+  ],
   providers: [
-    AppService,
+    // AppService,
     // CustomerService,
     // DeliveryOrderService,
     // DeliveryOrderTrackingService,

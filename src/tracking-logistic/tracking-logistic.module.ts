@@ -12,5 +12,6 @@ import { DeliveryOrderTracking } from './Entities/delivery-order-app.entity';
   ],
   controllers: [TrackingLogisticController],
   providers: [TrackingLogisticService],
+  exports: [TrackingLogisticModule, TrackingLogisticService],
 })
 export class TrackingLogisticModule {}
