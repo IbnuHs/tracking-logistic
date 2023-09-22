@@ -1,5 +1,5 @@
-import { DeliveryOrder } from 'src/delivery-order/entity/delivery-order.entity';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('transp_deliveryorder_tracking_app')
 export class DeliveryOrderTracking {

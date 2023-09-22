@@ -1,24 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common/enums';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomerService } from 'src/customer/customer.service';
 import { Repository } from 'typeorm';
-import { FindOrderDto } from './dto/deliveryOrder.dto';
-import { DeliveryOrder } from './entity/delivery-order.entity';
+import { DeliveryOrderDto } from './dto/delivery-tracking.dto';
+import { Customer } from './Entities/customer.entity';
+import { DeliveryOrder } from './Entities/delivery-order.entity';
 
 @Injectable()
-export class DeliveryOrderService {
+export class TrackingLogisticService {
   constructor(
-    @InjectRepository(DeliveryOrder)
-    private readonly DeliveryOrderRepository: Repository<DeliveryOrder>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
 
-    private readonly customerService: CustomerService,
+    @InjectRepository(DeliveryOrder)
+    private readonly deliveryOrderRepository: Repository<DeliveryOrder>,
   ) {}
 
-  async getDeliveryOrderByOrderNo(orderDto: FindOrderDto) {
-    const dataDeliveryOrder = await this.DeliveryOrderRepository.findOne({
+  async getDeliveryOrderByOrderNo(deliveryOrderDto: DeliveryOrderDto) {
+    const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
       where: {
-        OrderNo: orderDto.OrderId,
+        OrderNo: deliveryOrderDto.orderNo,
       },
       relations: {
         customer: true,

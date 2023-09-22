@@ -1,5 +1,5 @@
-import { Customer } from 'src/customer/entity/customer.entity';
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Customer } from './customer.entity';
 
 @Entity('transp_deliveryorder_app')
 export class DeliveryOrder {

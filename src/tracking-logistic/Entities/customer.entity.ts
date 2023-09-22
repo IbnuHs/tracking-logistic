@@ -1,5 +1,5 @@
-import { DeliveryOrder } from 'src/delivery-order/entity/delivery-order.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('customers_app')
 export class Customer {

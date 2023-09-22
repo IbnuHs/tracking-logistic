@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
-import { CustomerModule } from './customer/customer.module';
-import { DeliveryOrderTrackingModule } from './delivery-order-tracking/delivery-order-tracking.module';
+import { SendAccessCodeModule } from './send-access-code/send-access-code.module';
+import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
 
 @Module({
   imports: [
@@ -18,9 +17,11 @@ import { DeliveryOrderTrackingModule } from './delivery-order-tracking/delivery-
       autoLoadEntities: true,
       synchronize: true,
     }),
-    DeliveryOrderModule,
-    CustomerModule,
-    DeliveryOrderTrackingModule,
+    // Delivery,
+    // CustomerModule,
+    // DeliveryOrderTrackingModule,
+    SendAccessCodeModule,
+    TrackingLogisticModule,
   ],
   controllers: [AppController],
   providers: [
