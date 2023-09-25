@@ -7,13 +7,14 @@ import { TrackingLogisticService } from 'src/tracking-logistic/tracking-logistic
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
+import { DeliveryOrderTracking } from 'src/tracking-logistic/Entities/delivery-order-app.entity';
 
 @Module({
   controllers: [SendAccessCodeController],
   providers: [SendAccessCodeService, TrackingLogisticService],
   imports: [
     TrackingLogisticModule,
-    TypeOrmModule.forFeature([Customer, DeliveryOrder]),
+    TypeOrmModule.forFeature([Customer, DeliveryOrder, DeliveryOrderTracking]),
   ],
 })
 export class SendAccessCodeModule {}

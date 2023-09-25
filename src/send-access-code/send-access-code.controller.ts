@@ -7,11 +7,12 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  Res,
   UsePipes,
 } from '@nestjs/common';
 import { SendAccessCodeService } from './send-access-code.service';
 import { CreateSendAccessCodeDto } from './dto/create-send-access-code.dto';
-import { UpdateSendAccessCodeDto } from './dto/update-send-access-code.dto';
+import { Response } from 'express';
 
 @Controller('send-access-code')
 export class SendAccessCodeController {
@@ -19,7 +20,18 @@ export class SendAccessCodeController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  create(@Body() createSendAccessCodeDto: CreateSendAccessCodeDto) {
-    return this.sendAccessCodeService.sendAccessCode(createSendAccessCodeDto);
+  create(
+    @Body() createSendAccessCodeDto: CreateSendAccessCodeDto,
+    @Res() res: Response,
+  ) {
+    return this.sendAccessCodeService.sendAccessCode(
+      createSendAccessCodeDto,
+      res,
+    );
+  }
+
+  @Get('generate-whatsapp')
+  generateWhatsapp(@Res() res: Response) {
+    return this.sendAccessCodeService.generateWhatsapp(res);
   }
 }

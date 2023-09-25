@@ -8,11 +8,22 @@ import { Repository } from 'typeorm';
 import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { TrackingLogisticService } from 'src/tracking-logistic/tracking-logistic.service';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
-import {
-  BadRequestException,
-  HttpException,
-  NotFoundException,
-} from '@nestjs/common/exceptions';
+import { BadRequestException } from '@nestjs/common/exceptions';
+import { Client, LocalAuth } from 'whatsapp-web.js';
+import * as qrcode from 'qrcode-terminal';
+import { Response } from 'express';
+
+const client = new Client({
+  puppeteer: {
+    // headless: false,
+    args: ['--no-sandbox'],
+  },
+  authStrategy: new LocalAuth({
+    clientId: 'client',
+  }),
+});
+const allSessionObject = {};
+let ready = false;
 
 @Injectable()
 export class SendAccessCodeService {
@@ -26,7 +37,10 @@ export class SendAccessCodeService {
     private readonly deliveryOrderRepository: Repository<DeliveryOrder>,
   ) {}
 
-  async sendAccessCode(createSendAccessCodeDto: CreateSendAccessCodeDto) {
+  async sendAccessCode(
+    createSendAccessCodeDto: CreateSendAccessCodeDto,
+    Res: Response,
+  ) {
     try {
       const emailRegex =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -62,7 +76,10 @@ export class SendAccessCodeService {
           message: 'Email untuk kode akses terkirim!',
         };
       } else if (validatePhone) {
-        return 'phone';
+        if (user.customer.Phone !== createSendAccessCodeDto.contact) {
+          throw new BadRequestException('Nomor input tidak terdaftar');
+        }
+        return this.sendWhatsapp(user.customer.Phone, user.Access, Res);
       }
       return {
         statusCode: HttpStatus.OK,
@@ -105,5 +122,78 @@ export class SendAccessCodeService {
     });
 
     console.log(sendMail);
+  }
+
+  async generateWhatsapp(res: Response) {
+    const data = {};
+    if (allSessionObject['client']) {
+      console.log('client connected');
+      data['client_ready'] = true;
+      return res.json({ data });
+    }
+    try {
+      client
+        .once('qr', (qr) => {
+          allSessionObject['client'] = null;
+          console.log('qr received!', qr);
+          qrcode.generate(qr, { small: true });
+          data['qr'] = qr;
+          return res.json({ data });
+        })
+        .once('authenticated', () => {
+          console.log('AUTHENTICATED');
+        })
+        .once('auth_failure', () => {
+          allSessionObject['client'] = null;
+          console.log('failed');
+          return res.json({ data });
+        })
+        .once('disconnected', () => {
+          return res.json({
+            message: 'Whatsapp disconnected',
+          });
+        })
+        .once('ready', () => {
+          console.log('client is ready!');
+          ready = true;
+          allSessionObject['client'] = client;
+          // console.log(allSessionObject['client']);
+          // if (allSessionObject['client']) {
+          //   data['client_ready'] = true;
+          // return res.json({ data });
+          // }
+          // console.log(allSessionObject['client']);
+        })
+        .initialize();
+
+      // return res.json({ data });
+    } catch (err) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      };
+    }
+  }
+
+  async sendWhatsapp(phone: string, accessCode: string, res: Response) {
+    if (!allSessionObject['client']) {
+      return res.json({
+        message: 'session not creates yet',
+      });
+    }
+    const phoneNumber = '62' + phone.slice(1) + '@c.us';
+    if (ready) {
+      await client.sendMessage(phoneNumber, 'Kode akses anda: ' + accessCode);
+
+      return res.json({
+        session: 'client',
+        message: `Sent! Access code: ` + accessCode,
+        number: phone,
+      });
+    }
+
+    return {
+      message: 'Whatsapp session not created!',
+    };
   }
 }
