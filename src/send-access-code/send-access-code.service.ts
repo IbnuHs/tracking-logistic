@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSendAccessCodeDto } from './dto/create-send-access-code.dto';
-import { UpdateSendAccessCodeDto } from './dto/update-send-access-code.dto';
 import * as nodemailer from 'nodemailer';
 import { HttpStatus } from '@nestjs/common/enums';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +8,7 @@ import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { TrackingLogisticService } from 'src/tracking-logistic/tracking-logistic.service';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Client, LocalAuth, RemoteAuth } from 'whatsapp-web.js';
+import { Client, LocalAuth } from 'whatsapp-web.js';
 import * as qrcode from 'qrcode-terminal';
 import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
@@ -95,8 +94,8 @@ export class SendAccessCodeService {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'logistictesting33@gmail.com',
-        pass: 'rwfm ykqo dohs lbxy',
+        user: process.env.GMAIL_EMAIL,
+        pass: process.env.GMAIL_PASS,
       },
     });
 
@@ -111,7 +110,7 @@ export class SendAccessCodeService {
       if (err) {
         return {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: err,
+          message: err.message,
         };
       }
       return {
@@ -160,7 +159,7 @@ export class SendAccessCodeService {
       html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.orderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
     };
 
-    const sendMail = transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
         return {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -170,7 +169,9 @@ export class SendAccessCodeService {
     });
     return {
       statusCode: HttpStatus.OK,
-      message: 'Email untuk kode akses terkirim!',
+      session: 'client',
+      message: `Kode akses terkirim`,
+      email: dataDeliveryOrder.customer.Email,
     };
   }
 
@@ -185,7 +186,8 @@ export class SendAccessCodeService {
 
     if (!allSessionObject['client']) {
       return res.json({
-        message: 'session not creates yet',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Session belum dibuat. Generate Whatsapp terlebih dahulu',
       });
     }
     const phoneNumber = '62' + sendWADto.phone.slice(1) + '@c.us';
@@ -193,7 +195,7 @@ export class SendAccessCodeService {
       try {
         await client.sendMessage(
           phoneNumber,
-          'Kode akses anda: ' + dataDeliveryOrder.Access,
+          `Kode akses anda untuk pemesanan dengan nomor order <b>${dataDeliveryOrder.OrderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
         );
       } catch (err) {
         return res.json({
@@ -202,14 +204,16 @@ export class SendAccessCodeService {
       }
 
       return res.json({
+        statusCode: HttpStatus.OK,
         session: 'client',
-        message: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendWADto.orderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
+        message: `Kode akses terkirim`,
         number: dataDeliveryOrder.customer.Phone,
       });
     }
 
     return {
-      message: 'Whatsapp session not created!',
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Whatsapp session not created! Please generate whatsapp first',
     };
   }
   //==============================================
@@ -246,16 +250,17 @@ export class SendAccessCodeService {
           console.log('AUTHENTICATED');
         })
         .once('ready', () => {
-          if (!data['qr']) {
-            return res.json({
-              message: 'Whatsapp ready!',
-            });
-          }
           console.log('client is ready!');
           delete data['qr'];
           ready = true;
           allSessionObject['client'] = client;
           console.log(allSessionObject['client']);
+          if (!data['qr']) {
+            return res.json({
+              statusCode: HttpStatus.OK,
+              message: 'Whatsapp ready!',
+            });
+          }
         })
         .initialize();
 
@@ -287,24 +292,32 @@ export class SendAccessCodeService {
     deliveryOrderNum: string,
     res: Response,
   ) {
-    if (!allSessionObject['client']) {
-      return res.json({
-        message: 'session not creates yet',
-      });
-    }
-    const phoneNumber = '62' + phone.slice(1) + '@c.us';
-    if (ready) {
-      await client.sendMessage(phoneNumber, 'Kode akses anda: ' + accessCode);
+    try {
+      if (!allSessionObject['client']) {
+        return res.json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Layanan Whatsapp tidak tersedia. Mohon menghubungi admin.',
+        });
+      }
+      const phoneNumber = '62' + phone.slice(1) + '@c.us';
+      if (ready) {
+        await client.sendMessage(
+          phoneNumber,
+          `Kode akses anda untuk pemesanan dengan nomor order <b>${deliveryOrderNum}</b> adalah <br> <b>${accessCode}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
+        );
 
-      return res.json({
-        session: 'client',
-        message: `Kode akses anda untuk pemesanan dengan nomor order <b>${deliveryOrderNum}</b> adalah <br> <b>${accessCode}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
-        number: phone,
-      });
+        return res.json({
+          statusCode: HttpStatus.OK,
+          session: 'client',
+          message: `Kode akses terkirim`,
+          number: phone,
+        });
+      }
+    } catch (err) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      };
     }
-
-    return {
-      message: 'Whatsapp session not created!',
-    };
   }
 }
