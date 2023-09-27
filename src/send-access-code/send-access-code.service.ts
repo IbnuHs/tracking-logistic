@@ -244,7 +244,9 @@ export class SendAccessCodeService {
           ready = false;
           qrcode.generate(qr, { small: true });
           data['qr'] = qr;
-          return res.json({ data });
+          if (!ready) {
+            return res.json({ data });
+          }
         })
         .once('authenticated', () => {
           console.log('AUTHENTICATED');
@@ -255,12 +257,11 @@ export class SendAccessCodeService {
           ready = true;
           allSessionObject['client'] = client;
           console.log(allSessionObject['client']);
-          if (!data['qr']) {
-            return res.json({
-              statusCode: HttpStatus.OK,
-              message: 'Whatsapp ready!',
-            });
-          }
+          // if()
+          // return res.json({
+          //   statusCode: HttpStatus.OK,
+          //   message: 'Whatsapp ready!',
+          // });
         })
         .initialize();
 
@@ -273,7 +274,9 @@ export class SendAccessCodeService {
       console.log(data['qr']);
       if (data['qr']) {
         qrcode.generate(data['qr'], { small: true });
-        return res.json({ data });
+        if (!ready) {
+          return res.json({ data });
+        }
       }
       console.log('list:' + client.getMaxListeners());
 
