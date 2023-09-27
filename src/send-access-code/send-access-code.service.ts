@@ -246,16 +246,16 @@ export class SendAccessCodeService {
           console.log('AUTHENTICATED');
         })
         .once('ready', () => {
-          if (!data['qr']) {
-            return res.json({
-              message: 'Whatsapp ready!',
-            });
-          }
           console.log('client is ready!');
           delete data['qr'];
           ready = true;
           allSessionObject['client'] = client;
           console.log(allSessionObject['client']);
+          if (!data['qr']) {
+            return res.json({
+              message: 'Whatsapp ready!',
+            });
+          }
         })
         .initialize();
 
