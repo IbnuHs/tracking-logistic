@@ -257,6 +257,7 @@ export class SendAccessCodeService {
           ready = true;
           allSessionObject['client'] = client;
           console.log(allSessionObject['client']);
+
           // if()
           // return res.json({
           //   statusCode: HttpStatus.OK,

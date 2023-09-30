@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn, OneToMany } from 'typeorm';
 import { Customer } from './customer.entity';
+import { DeliveryOrderTracking } from './delivery-order-app.entity';
 
 @Entity('transp_deliveryorder_app')
 export class DeliveryOrder {
@@ -41,4 +42,7 @@ export class DeliveryOrder {
 
   @ManyToOne(() => Customer, (customer) => customer.Oid)
   customer: Customer;
+
+  @OneToMany(() => DeliveryOrderTracking, (DOT) => DOT.DeliveryOrder)
+  deliveryOrderTracking: DeliveryOrderTracking[];
 }
