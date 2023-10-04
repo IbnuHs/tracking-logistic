@@ -28,7 +28,7 @@ export class TrackingLogisticService {
   async getDeliveryOrderByOrderNo(deliveryOrderDto: DeliveryOrderDto) {
     const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
       where: {
-        OrderNo: deliveryOrderDto.orderNo,
+        OrderNo: deliveryOrderDto.OrderNo,
       },
       relations: {
         customer: true,
@@ -42,7 +42,7 @@ export class TrackingLogisticService {
       statusCode: HttpStatus.OK,
       message: 'Data Order Detail ditemukan!',
       data: {
-        orderNo: dataDeliveryOrder.OrderNo,
+        OrderNo: dataDeliveryOrder.OrderNo,
         customerId: dataDeliveryOrder.customer.CustomerId,
         customerName: dataDeliveryOrder.customer.Customer,
         customerAddress: dataDeliveryOrder.customer.Address,
@@ -65,6 +65,7 @@ export class TrackingLogisticService {
         customer: true,
       },
     });
+    console.log(Access);
     if (!dataDeliveryOrder)
       throw new NotFoundException('Data Delivery Tidak Ditemukan');
     if (dataDeliveryOrder.Access !== Access)

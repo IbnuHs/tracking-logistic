@@ -160,7 +160,7 @@ export class SendAccessCodeService {
       html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.orderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
     };
 
-    transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(mailOptions, (err) => {
       if (err) {
         return {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

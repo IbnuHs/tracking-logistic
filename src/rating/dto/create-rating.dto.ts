@@ -4,7 +4,7 @@ import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.ent
 
 export class CreateRatingDto {
   @IsNotEmpty()
-  DeliveryOid: DeliveryOrder;
+  OrderNo: DeliveryOrder;
 
   @IsNotEmpty()
   @IsEnum(RatingEnum)

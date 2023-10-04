@@ -1,15 +1,5 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryColumn,
-  OneToMany,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn, JoinColumn } from 'typeorm';
 import { Customer } from './customer.entity';
-import { DeliveryOrderTracking } from './delivery-order-app.entity';
-import { Rating } from 'src/rating/entities/rating.entity';
 
 @Entity('transp_deliveryorder_app')
 export class DeliveryOrder {
@@ -22,7 +12,7 @@ export class DeliveryOrder {
   @Column({ type: 'varchar', length: 10, nullable: false })
   Access: string;
 
-  @Column({ type: 'varchar', length: 40, nullable: false })
+  @Column({ type: 'varchar', length: 40, nullable: false, unique: true })
   OrderNo: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
@@ -37,9 +27,6 @@ export class DeliveryOrder {
   @Column({ type: 'varchar', length: 40, nullable: false })
   TypeOfRate: string;
 
-  // @Column({ type: 'varchar', length: 40, nullable: false })
-  // CustomerOid: string;
-
   @Column({ type: 'varchar', length: 100, nullable: false })
   Orides: string;
 
@@ -50,12 +37,6 @@ export class DeliveryOrder {
   ReceiverAddress: string;
 
   @ManyToOne(() => Customer, (customer) => customer.Oid)
+  @JoinColumn({ name: 'CustomerOid' })
   customer: Customer;
-
-  @OneToMany(() => DeliveryOrderTracking, (DOT) => DOT.DeliveryOrder)
-  deliveryOrderTracking: DeliveryOrderTracking[];
-
-  // @OneToOne(() => Rating)
-  // @JoinColumn()
-  // rating: Rating;
 }

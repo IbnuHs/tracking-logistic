@@ -1,4 +1,10 @@
-import { Controller, Get, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { DeliveryOrderDto } from './dto/delivery-tracking.dto';
 import { TrackingLogisticService } from './tracking-logistic.service';
 import { TrackingAndShipmentDto } from './dto/trackingAndShipment-dto';
@@ -9,6 +15,7 @@ export class TrackingLogisticController {
     private readonly trackingLogisticService: TrackingLogisticService,
   ) {}
 
+  @UsePipes(new ValidationPipe())
   @Get()
   getDataDeliveryOrder(@Body() deliveryOrderDto: DeliveryOrderDto) {
     return this.trackingLogisticService.getDeliveryOrderByOrderNo(

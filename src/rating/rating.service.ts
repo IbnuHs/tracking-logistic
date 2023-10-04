@@ -2,7 +2,6 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,10 +16,11 @@ export class RatingService {
     private readonly ratingRepository: Repository<Rating>,
   ) {}
 
-  async createRating(createRatingDto: CreateRatingDto) {
-    const { DeliveryOid, DeliveryRating } = createRatingDto;
+  async createRating(createRatingDto: CreateRatingDto): Promise<object> {
+    const { OrderNo, DeliveryRating } = createRatingDto;
+    console.log(OrderNo);
     const rating = new Rating();
-    rating.Delivery = DeliveryOid;
+    rating.Delivery = OrderNo;
     rating.DeliveryRating = DeliveryRating;
 
     try {
@@ -37,25 +37,41 @@ export class RatingService {
     // return 'This action adds a new rating';
   }
 
-  async getRating(GetRatingDto: getRatingDto) {
-    // return deliveryOid;
-    const oid = GetRatingDto;
-    console.log(oid.DeliveryOid);
+  async getRating(GetRatingDto: getRatingDto): Promise<object> {
     try {
-      const rating = await this.ratingRepository.find({
+      const ratingData = await this.ratingRepository.findOne({
         where: {
           Delivery: {
-            Oid: oid.DeliveryOid.Oid,
+            OrderNo: GetRatingDto.OrderNo,
           },
         },
         relations: {
           Delivery: true,
         },
       });
-      // console.log(rating);
-      return rating;
-    } catch (error) {
-      throw new NotFoundException(error.message);
+
+      if (!ratingData) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Rating tidak ditemukan',
+        };
+      }
+
+      const orderNo = ratingData.Delivery.OrderNo;
+      delete ratingData.Delivery;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Data ditemukan',
+        data: {
+          ...ratingData,
+          OrderNo: orderNo,
+        },
+      };
+    } catch (err) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      };
     }
   }
 }
