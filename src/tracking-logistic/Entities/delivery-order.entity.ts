@@ -1,5 +1,15 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Customer } from './customer.entity';
+import { DeliveryOrderTracking } from './delivery-order-app.entity';
+import { Rating } from 'src/rating/entities/rating.entity';
 
 @Entity('transp_deliveryorder_app')
 export class DeliveryOrder {
@@ -41,4 +51,11 @@ export class DeliveryOrder {
 
   @ManyToOne(() => Customer, (customer) => customer.Oid)
   customer: Customer;
+
+  @OneToMany(() => DeliveryOrderTracking, (DOT) => DOT.DeliveryOrder)
+  deliveryOrderTracking: DeliveryOrderTracking[];
+
+  // @OneToOne(() => Rating)
+  // @JoinColumn()
+  // rating: Rating;
 }

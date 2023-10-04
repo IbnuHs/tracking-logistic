@@ -86,6 +86,7 @@ export class TrackingLogisticService {
       Shipment_Info: {
         Services: dataDeliveryOrder.Services,
         Via: dataDeliveryOrder.Via,
+        TypeOfHandling: dataDeliveryOrder.TypeOfHandling,
         TypeOfRate: dataDeliveryOrder.TypeOfRate,
         OriginDestination: dataDeliveryOrder.Orides,
       },

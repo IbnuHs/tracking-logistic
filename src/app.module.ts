@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SendAccessCodeModule } from './send-access-code/send-access-code.module';
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
+import { RatingModule } from './rating/rating.module';
+import { CustomerServiceModule } from './customer-service/customer-service.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.mo
     // DeliveryOrderTrackingModule,
     SendAccessCodeModule,
     TrackingLogisticModule,
+    RatingModule,
+    CustomerServiceModule,
   ],
   controllers: [
     // AppController

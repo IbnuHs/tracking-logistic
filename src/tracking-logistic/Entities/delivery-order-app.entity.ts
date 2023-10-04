@@ -1,4 +1,13 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('transp_deliveryorder_tracking_app')
@@ -18,7 +27,6 @@ export class DeliveryOrderTracking {
   @Column({ type: 'datetime' })
   Datetime: Date;
 
-  @OneToOne(() => DeliveryOrder)
-  @JoinColumn()
-  DeliveryOrder: string;
+  @ManyToOne(() => DeliveryOrder, (Do) => Do.Oid)
+  DeliveryOrder: DeliveryOrder;
 }
