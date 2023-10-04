@@ -6,6 +6,7 @@ import { SendAccessCodeModule } from './send-access-code/send-access-code.module
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
 import { RatingModule } from './rating/rating.module';
 import { CustomerServiceModule } from './customer-service/customer-service.module';
+import { QuickOrderModule } from './quick-order/quick-order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CustomerServiceModule } from './customer-service/customer-service.modul
     TrackingLogisticModule,
     RatingModule,
     CustomerServiceModule,
+    QuickOrderModule,
   ],
   controllers: [
     // AppController
