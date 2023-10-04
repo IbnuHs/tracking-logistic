@@ -48,4 +48,9 @@ export class SendAccessCodeController {
   sendWhatsapp(@Body() sendWADto: SendAccessWADto, @Res() res: Response) {
     return this.sendAccessCodeService.sendViaWhatsapp(sendWADto, res);
   }
+
+  @Post('/whatsappTwilio')
+  sendWhatsappTwilio(@Body() sendWADto: SendAccessWADto) {
+    return this.sendAccessCodeService.sendViaWhatsappTwilio();
+  }
 }

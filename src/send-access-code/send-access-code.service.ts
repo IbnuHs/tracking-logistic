@@ -13,6 +13,7 @@ import * as qrcode from 'qrcode-terminal';
 import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
+import * as Twilio from 'twilio';
 
 let client: Client;
 let ready = false;
@@ -215,6 +216,20 @@ export class SendAccessCodeService {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Whatsapp session not created! Please generate whatsapp first',
     };
+  }
+
+  async sendViaWhatsappTwilio() {
+    const accountSid = 'AC98e45ec211ecbfdfebc5244b5017c0df';
+    const authToken = 'febe2476e8811bf4c1f6c4bb7657b012';
+    const twilioClient = Twilio(accountSid, authToken);
+
+    twilioClient.messages
+      .create({
+        from: 'whatsapp:+14155238886',
+        body: 'haloo from twilio',
+        to: 'whatsapp:+6282190579766',
+      })
+      .then((message) => console.log(message.sid));
   }
   //==============================================
 
