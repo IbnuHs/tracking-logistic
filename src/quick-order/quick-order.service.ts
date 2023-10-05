@@ -14,6 +14,7 @@ export class QuickOrderService {
   async createQuickOrder(createQuickOrderDto: CreateQuickOrderDto) {
     try {
       const order = new QuickOrder();
+      order.Oid;
       order.Customer = createQuickOrderDto.Customer;
       order.TypeOfBusiness = createQuickOrderDto.TypeOfBusiness;
       order.Phone = createQuickOrderDto.Phone;
