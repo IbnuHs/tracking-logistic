@@ -25,10 +25,10 @@ export class TrackingLogisticService {
     private readonly trackingRepository: Repository<DeliveryOrderTracking>,
   ) {}
 
-  async getDeliveryOrderByOrderNo(deliveryOrderDto: DeliveryOrderDto) {
+  async getDeliveryOrderByOrderNo(OrderNo: string) {
     const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
       where: {
-        OrderNo: deliveryOrderDto.OrderNo,
+        OrderNo: OrderNo,
       },
       relations: {
         customer: true,
