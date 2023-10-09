@@ -18,12 +18,12 @@ export class TrackingLogisticController {
   ) {}
 
   @UsePipes(new ValidationPipe())
-  @Post(':orderNo')
+  @Get(':orderNo')
   getDataDeliveryOrder(@Param('orderNo') orderNo: string) {
     return this.trackingLogisticService.getDeliveryOrderByOrderNo(orderNo);
   }
 
-  @Get('trackingAndShipment')
+  @Post('trackingAndShipment')
   trackingOrder(@Body() trackingAndShipmentDto: TrackingAndShipmentDto) {
     return this.trackingLogisticService.TrackingAndShipmentinfo(
       trackingAndShipmentDto,
