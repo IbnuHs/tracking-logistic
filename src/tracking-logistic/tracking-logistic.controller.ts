@@ -23,7 +23,7 @@ export class TrackingLogisticController {
     return this.trackingLogisticService.getDeliveryOrderByOrderNo(orderNo);
   }
 
-  @Get('trackingAndShipment')
+  @Post('trackingAndShipment')
   trackingOrder(@Body() trackingAndShipmentDto: TrackingAndShipmentDto) {
     return this.trackingLogisticService.TrackingAndShipmentinfo(
       trackingAndShipmentDto,
