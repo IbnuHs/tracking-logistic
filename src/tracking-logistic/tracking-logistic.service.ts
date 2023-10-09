@@ -81,6 +81,12 @@ export class TrackingLogisticService {
     if (!Tracking_Status || Tracking_Status.length === 0)
       throw new NotFoundException('Order Not Found');
 
+    Tracking_Status.sort((a, b) => {
+      return new Date(a.Datetime).getTime() - new Date(b.Datetime).getTime();
+    });
+
+    console.log(new Date(Tracking_Status[0].Datetime))
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Data Order Detail ditemukan!',
