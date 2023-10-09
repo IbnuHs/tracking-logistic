@@ -18,7 +18,7 @@ export class TrackingLogisticController {
   ) {}
 
   @UsePipes(new ValidationPipe())
-  @Post(':orderNo')
+  @Get(':orderNo')
   getDataDeliveryOrder(@Param('orderNo') orderNo: string) {
     return this.trackingLogisticService.getDeliveryOrderByOrderNo(orderNo);
   }
