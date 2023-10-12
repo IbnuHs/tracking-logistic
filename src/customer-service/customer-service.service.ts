@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateCustomerServiceDto } from './dto/create-customer-service.dto';
-import { UpdateCustomerServiceDto } from './dto/update-customer-service.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CustomerService } from './entities/customer-service.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class CustomerServiceService {
-  create(createCustomerServiceDto: CreateCustomerServiceDto) {
-    return 'This action adds a new customerService';
-  }
+  constructor(
+    @InjectRepository(CustomerService)
+    private readonly customerRepository: Repository<CustomerService>,
 
-  findAll() {
-    return `This action returns all customerService`;
-  }
+    private readonly jwtService: JwtService,
+  ) {}
+  async Login(createCustomerServiceDto: CreateCustomerServiceDto) {
+    try {
+      const user = await this.customerRepository.findOne({
+        where: {
+          Email: createCustomerServiceDto.email,
+        },
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} customerService`;
-  }
-
-  update(id: number, updateCustomerServiceDto: UpdateCustomerServiceDto) {
-    return `This action updates a #${id} customerService`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} customerService`;
+      if (!user) throw new NotFoundException('Email Tidak ditemukan');
+      if (user.Pass !== createCustomerServiceDto.password)
+        throw new UnauthorizedException('Password Salah');
+      const payload = { id: user.Oid, name: user.Username };
+      const accessToken = this.jwtService.sign(payload, {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+        expiresIn: '60s',
+      });
+      // console.log(process.env.ACCESS_TOKEN_SECRET);
+      return {
+        statusCode: HttpStatus.OK,
+        accesToken: accessToken,
+      };
+    } catch (error) {
+      return {
+        message: error.message,
+      };
+    }
   }
 }

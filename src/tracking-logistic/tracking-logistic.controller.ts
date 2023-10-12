@@ -4,6 +4,8 @@ import {
   Body,
   UsePipes,
   ValidationPipe,
+  Param,
+  Post,
 } from '@nestjs/common';
 import { DeliveryOrderDto } from './dto/delivery-tracking.dto';
 import { TrackingLogisticService } from './tracking-logistic.service';
@@ -16,14 +18,12 @@ export class TrackingLogisticController {
   ) {}
 
   @UsePipes(new ValidationPipe())
-  @Get()
-  getDataDeliveryOrder(@Body() deliveryOrderDto: DeliveryOrderDto) {
-    return this.trackingLogisticService.getDeliveryOrderByOrderNo(
-      deliveryOrderDto,
-    );
+  @Get(':orderNo')
+  getDataDeliveryOrder(@Param('orderNo') orderNo: string) {
+    return this.trackingLogisticService.getDeliveryOrderByOrderNo(orderNo);
   }
 
-  @Get('trackingAndShipment')
+  @Post('trackingAndShipment')
   trackingOrder(@Body() trackingAndShipmentDto: TrackingAndShipmentDto) {
     return this.trackingLogisticService.TrackingAndShipmentinfo(
       trackingAndShipmentDto,

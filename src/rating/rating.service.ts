@@ -18,7 +18,7 @@ export class RatingService {
 
   async createRating(createRatingDto: CreateRatingDto): Promise<object> {
     const { OrderNo, DeliveryRating } = createRatingDto;
-    console.log(OrderNo);
+    // console.log(OrderNo);
     const rating = new Rating();
     rating.Delivery = OrderNo;
     rating.DeliveryRating = DeliveryRating;

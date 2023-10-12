@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, PrimaryColumn, ManyToOne } from 'typeorm';
 import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('transp_deliveryorder_tracking_app')
@@ -6,7 +6,7 @@ export class DeliveryOrderTracking {
   @PrimaryColumn({ type: 'int', nullable: false })
   Oid: number;
 
-  @OneToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
+  @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
   @JoinColumn({ name: 'OrderNo', referencedColumnName: 'OrderNo' })
   OrderNo: string;
 
@@ -18,4 +18,8 @@ export class DeliveryOrderTracking {
 
   @Column({ type: 'datetime' })
   Datetime: Date;
+
+  @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
+  @JoinColumn()
+  deliveryOrder: DeliveryOrder;
 }

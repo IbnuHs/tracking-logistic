@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SendAccessCodeModule } from './send-access-code/send-access-code.module';
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
