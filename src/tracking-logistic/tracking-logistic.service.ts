@@ -52,6 +52,7 @@ export class TrackingLogisticService {
     };
   }
 
+  // Handler Get Tracking Info and Shipment Info
   async TrackingAndShipmentinfo(
     trackingDto: TrackingAndShipmentDto,
   ): Promise<object> {
@@ -62,31 +63,18 @@ export class TrackingLogisticService {
         OrderNo: OrderNo,
       },
       relations: {
-        customer: true,
+        // customer: true,
+        tracking: true,
       },
     });
-    console.log(Access);
-    if (!dataDeliveryOrder)
-      throw new NotFoundException('Data Delivery Tidak Ditemukan');
+    // Checking Access Code
     if (dataDeliveryOrder.Access !== Access)
-      throw new UnauthorizedException('Access Code Denied');
+      throw new UnauthorizedException('Kode Akses Anda Salah');
 
-    // Get Tracking
-    const Tracking_Status = await this.trackingRepository.find({
-      where: {
-        OrderNo: trackingDto.OrderNo,
-      },
-    });
-
-    if (!Tracking_Status || Tracking_Status.length === 0)
-      throw new NotFoundException('Order Not Found');
-
-    Tracking_Status.sort((a, b) => {
+    // Sorting Status Tracking
+    dataDeliveryOrder.tracking.sort((a, b) => {
       return new Date(a.Datetime).getTime() - new Date(b.Datetime).getTime();
     });
-
-    console.log(new Date(Tracking_Status[0].Datetime))
-
     return {
       statusCode: HttpStatus.OK,
       message: 'Data Order Detail ditemukan!',
@@ -97,7 +85,41 @@ export class TrackingLogisticService {
         TypeOfRate: dataDeliveryOrder.TypeOfRate,
         OriginDestination: dataDeliveryOrder.Orides,
       },
-      Tracking_Status,
+      Tracking: dataDeliveryOrder.tracking,
     };
   }
 }
+// console.log(Access);
+// if (!dataDeliveryOrder)
+//   throw new NotFoundException('Data Delivery Tidak Ditemukan');
+// if (dataDeliveryOrder.Access !== Access)
+//   throw new UnauthorizedException('Access Code Denied');
+
+// // Get Tracking
+// const Tracking_Status = await this.trackingRepository.find({
+//   where: {
+//     OrderNo: trackingDto.OrderNo,
+//   },
+// });
+
+// if (!Tracking_Status || Tracking_Status.length === 0)
+//   throw new NotFoundException('Order Not Found');
+
+// Tracking_Status.sort((a, b) => {
+//   return new Date(a.Datetime).getTime() - new Date(b.Datetime).getTime();
+// });
+
+// console.log(new Date(Tracking_Status[0].Datetime));
+
+// return {
+//   statusCode: HttpStatus.OK,
+//   message: 'Data Order Detail ditemukan!',
+//   Shipment_Info: {
+// Services: dataDeliveryOrder.Services,
+// Via: dataDeliveryOrder.Via,
+// TypeOfHandling: dataDeliveryOrder.TypeOfHandling,
+// TypeOfRate: dataDeliveryOrder.TypeOfRate,
+// OriginDestination: dataDeliveryOrder.Orides,
+//   },
+//   Tracking_Status,
+// };
