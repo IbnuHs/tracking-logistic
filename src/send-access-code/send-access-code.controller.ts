@@ -53,4 +53,12 @@ export class SendAccessCodeController {
   sendWhatsappTwilio(@Body() sendWADto: SendAccessWADto) {
     return this.sendAccessCodeService.sendViaWhatsappTwilio();
   }
+
+  @Post('/whatsapp-baileys')
+  sendWABaileys(@Body() sendWADto: SendAccessWADto, @Res() respons: Response) {
+    return this.sendAccessCodeService.sendViaWhatsappBaileys(
+      sendWADto,
+      respons,
+    );
+  }
 }

@@ -14,14 +14,24 @@ import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
 import * as Twilio from 'twilio';
+import { WhatsappBaileysService } from './baileys.service';
+import { DisconnectReason } from '@whiskeysockets/baileys/lib/Types';
+import {
+  fetchLatestBaileysVersion,
+  useMultiFileAuthState,
+} from '@whiskeysockets/baileys/lib/Utils';
+import makeWASocket from '@whiskeysockets/baileys/lib/Socket';
+import { isJidBroadcast } from '@whiskeysockets/baileys/lib/WABinary';
+import { Boom } from '@hapi/boom';
+import { OnApplicationBootstrap } from '@nestjs/common/interfaces';
 
 let client: Client;
 let ready = false;
 let allSessionObject = {};
-const data = {};
+let data = {};
 
 @Injectable()
-export class SendAccessCodeService {
+export class SendAccessCodeService implements OnApplicationBootstrap {
   constructor(
     private trackingLogisticService: TrackingLogisticService,
 
@@ -30,7 +40,14 @@ export class SendAccessCodeService {
 
     @InjectRepository(DeliveryOrder)
     private readonly deliveryOrderRepository: Repository<DeliveryOrder>,
+
+    private baileysService: WhatsappBaileysService,
   ) {}
+
+  async onApplicationBootstrap() {
+    let res: Response;
+    await this.generateWhatsapp(res);
+  }
 
   async sendAccessCode(
     createSendAccessCodeDto: CreateSendAccessCodeDto,
@@ -138,12 +155,12 @@ export class SendAccessCodeService {
 
   async sendViaEmail(sendEmailDto: SendAccessEmailDto) {
     const dataDeliveryOrder = await this.findDataByDeliveryOrder(
-      sendEmailDto.orderNo,
+      sendEmailDto.OrderNo,
     );
 
-    if (sendEmailDto.email !== dataDeliveryOrder.customer.Email) {
-      throw new BadRequestException('Email bukan yang terdaftar di sistem.');
-    }
+    // if (sendEmailDto.email !== dataDeliveryOrder.customer.Email) {
+    //   throw new BadRequestException('Email bukan yang terdaftar di sistem.');
+    // }
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -155,9 +172,9 @@ export class SendAccessCodeService {
 
     const mailOptions = {
       from: 'logistictesting33@gmail.com',
-      to: sendEmailDto.email,
+      to: dataDeliveryOrder.customer.Email,
       subject: 'Akses Kode Tracking Logistik',
-      html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.orderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
+      html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.OrderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
     };
 
     transporter.sendMail(mailOptions, (err) => {
@@ -178,25 +195,28 @@ export class SendAccessCodeService {
 
   async sendViaWhatsapp(sendWADto: SendAccessWADto, res: Response) {
     const dataDeliveryOrder = await this.findDataByDeliveryOrder(
-      sendWADto.orderNo,
+      sendWADto.OrderNo,
     );
 
-    if (sendWADto.phone !== dataDeliveryOrder.customer.Phone) {
-      throw new BadRequestException('Nomor HP bukan yang terdaftar di sistem.');
-    }
+    // if (sendWADto.phone !== dataDeliveryOrder.customer.Phone) {
+    //   throw new BadRequestException('Nomor HP bukan yang terdaftar di sistem.');
+    // }
 
     if (!allSessionObject['client']) {
+      // await this.generateWhatsapp(res);
       return res.json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Session belum dibuat. Generate Whatsapp terlebih dahulu',
       });
     }
-    const phoneNumber = '62' + sendWADto.phone.slice(1) + '@c.us';
+    let phoneNumber = dataDeliveryOrder.customer.Phone.slice(1);
+
+    phoneNumber = '62' + phoneNumber + '@c.us';
     if (ready) {
       try {
         await client.sendMessage(
           phoneNumber,
-          `Kode akses anda untuk pemesanan dengan nomor order <b>${dataDeliveryOrder.OrderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
+          `Kode akses anda untuk pemesanan dengan nomor order *${dataDeliveryOrder.OrderNo}* adalah *${dataDeliveryOrder.Access}*. Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
         );
       } catch (err) {
         return res.json({
@@ -231,6 +251,57 @@ export class SendAccessCodeService {
       })
       .then((message) => console.log(message.sid));
   }
+
+  async sendViaWhatsappBaileys(sendWADto: SendAccessWADto, res: Response) {
+    // return res.json({ tes: 'hai' });
+    try {
+      const { state, saveCreds } =
+        await useMultiFileAuthState('baileys_auth_info');
+      const { version, isLatest } = await fetchLatestBaileysVersion();
+
+      const sock = makeWASocket({
+        printQRInTerminal: true,
+        auth: state,
+        version,
+        shouldIgnoreJid: (jid) => isJidBroadcast(jid),
+      });
+
+      sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect, qr } = update;
+        if (qr) {
+          data['qr'] = qr;
+        }
+        // console.log(connection);
+        if (connection === 'open') {
+          console.log('connected');
+          // res.json({ message: 'connected' });
+          // await sendMessage;
+          sock.sendMessage('6281342090439@s.whatsapp.net', {
+            text: 'tes',
+          });
+        } else if (connection === 'close') {
+          const shouldReconnect =
+            (lastDisconnect.error as Boom)?.output?.statusCode !==
+            DisconnectReason.loggedOut;
+          console.log(
+            'connection closed due to ',
+            lastDisconnect.error,
+            ', reconnecting ',
+            shouldReconnect,
+          );
+
+          if (shouldReconnect) {
+            this.baileysService.connectWhatsapp();
+          }
+        }
+      });
+      sock.ev.on('creds.update', saveCreds);
+
+      return res.json({ data, pesan: 'dikirim' });
+    } catch (error) {
+      return error.message;
+    }
+  }
   //==============================================
 
   async generateWhatsapp(res: Response) {
@@ -259,6 +330,9 @@ export class SendAccessCodeService {
           ready = false;
           qrcode.generate(qr, { small: true });
           data['qr'] = qr;
+          data['message'] =
+            'Session whatsapp tidak tersedia. scan qr terlebih dahulu.';
+
           if (!ready) {
             return res.json({ data });
           }
@@ -268,32 +342,36 @@ export class SendAccessCodeService {
         })
         .once('ready', () => {
           console.log('client is ready!');
-          delete data['qr'];
+          // delete data['qr'];
           ready = true;
           allSessionObject['client'] = client;
           console.log(allSessionObject['client']);
 
-          // if()
-          // return res.json({
-          //   statusCode: HttpStatus.OK,
-          //   message: 'Whatsapp ready!',
-          // });
+          // if (!data['qr']) {
+          //   return res.json({
+          //     statusCode: HttpStatus.OK,
+          //     message: 'Whatsapp ready! Kirim pesan kembali',
+          //   });
+          // }
         })
         .initialize();
 
-      client.on('disconnected', () => {
+      client.on('disconnected', async () => {
+        let res: Response;
         console.log('disconnected');
         allSessionObject = {};
-        return;
+        data = {};
+        return await this.generateWhatsapp(res);
+        // return;
       });
 
-      console.log(data['qr']);
-      if (data['qr']) {
-        qrcode.generate(data['qr'], { small: true });
-        if (!ready) {
-          return res.json({ data });
-        }
-      }
+      // console.log(data['qr']);
+      // if (data['qr']) {
+      //   qrcode.generate(data['qr'], { small: true });
+      //   if (!ready) {
+      //     return res.json({ data });
+      //   }
+      // }
       console.log('list:' + client.getMaxListeners());
 
       // return res.json({ data });

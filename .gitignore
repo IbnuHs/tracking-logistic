@@ -36,3 +36,8 @@ lerna-debug.log*
 
 /.wwebjs_auth
 /.wwebjs_cache
+/auth_info_baileys
+/baileys_auth_info
+
+baileys_auth_info*
+app-state-sync*
