@@ -8,7 +8,7 @@ import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { TrackingLogisticService } from 'src/tracking-logistic/tracking-logistic.service';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import { Client, LocalAuth, Chat } from 'whatsapp-web.js';
 import * as qrcode from 'qrcode-terminal';
 import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
@@ -311,21 +311,18 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
       data['client_ready'] = true;
       return res.json({ data });
     } else {
-      client = new Client({
-        puppeteer: {
-          // headless: false,
-          args: ['--no-sandbox'],
-        },
-        authStrategy: new LocalAuth({
-          clientId: 'client',
-        }),
-      });
-    }
+      try {
+        client = new Client({
+          puppeteer: {
+            // headless: false,
+            args: ['--no-sandbox'],
+          },
+          authStrategy: new LocalAuth({
+            clientId: 'client',
+          }),
+        });
 
-    try {
-      client
-        .setMaxListeners(1)
-        .on('qr', (qr) => {
+        client.setMaxListeners(1).on('qr', (qr) => {
           console.log('qr received!', qr);
           ready = false;
           qrcode.generate(qr, { small: true });
@@ -333,14 +330,14 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
           data['message'] =
             'Session whatsapp tidak tersedia. scan qr terlebih dahulu.';
 
-          if (!ready) {
-            return res.json({ data });
-          }
-        })
-        .once('authenticated', () => {
+          // if (!ready) {
+          //   return res.json({ data });
+          // }
+        });
+        client.on('authenticated', () => {
           console.log('AUTHENTICATED');
-        })
-        .once('ready', () => {
+        });
+        client.on('ready', () => {
           console.log('client is ready!');
           // delete data['qr'];
           ready = true;
@@ -353,33 +350,80 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
           //     message: 'Whatsapp ready! Kirim pesan kembali',
           //   });
           // }
-        })
-        .initialize();
+        });
 
-      client.on('disconnected', async () => {
-        let res: Response;
-        console.log('disconnected');
-        allSessionObject = {};
-        data = {};
-        return await this.generateWhatsapp(res);
-        // return;
-      });
+        // const chat = Chat
 
-      // console.log(data['qr']);
-      // if (data['qr']) {
-      //   qrcode.generate(data['qr'], { small: true });
-      //   if (!ready) {
-      //     return res.json({ data });
-      //   }
-      // }
-      console.log('list:' + client.getMaxListeners());
+        client.on('disconnected', async () => {
+          let res: Response;
+          console.log('disconnected');
+          allSessionObject = {};
+          data = {};
 
-      // return res.json({ data });
-    } catch (err) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: err.message,
-      };
+          // client = new Client({
+          //   puppeteer: {
+          //     // headless: false,
+          //     args: ['--no-sandbox'],
+          //   },
+          //   authStrategy: new LocalAuth({
+          //     clientId: 'client',
+          //   }),
+          // });
+
+          // client.setMaxListeners(1).on('qr', (qr) => {
+          //   console.log('qr received!', qr);
+          //   ready = false;
+          //   qrcode.generate(qr, { small: true });
+          //   data['qr'] = qr;
+          //   data['message'] =
+          //     'Session whatsapp tidak tersedia. scan qr terlebih dahulu.';
+
+          //   // if (!ready) {
+          //   //   return res.json({ data });
+          //   // }
+          // });
+          // client.on('authenticated', () => {
+          //   console.log('AUTHENTICATED');
+          // });
+          // client.on('ready', () => {
+          //   console.log('client is ready!');
+          //   // delete data['qr'];
+          //   ready = true;
+          //   allSessionObject['client'] = client;
+          //   console.log(allSessionObject['client']);
+
+          //   // if (!data['qr']) {
+          //   //   return res.json({
+          //   //     statusCode: HttpStatus.OK,
+          //   //     message: 'Whatsapp ready! Kirim pesan kembali',
+          //   //   });
+          //   // }
+          // });
+
+          this.generateWhatsapp(res);
+          // return;
+        });
+
+        // client.on('message', (msg) => {
+        //   console.log(msg);
+        // });
+
+        client.initialize();
+        console.log(data['qr']);
+        if (data['qr']) {
+          qrcode.generate(data['qr'], { small: true });
+          if (!ready) {
+            return res.json({ data });
+          }
+        }
+        console.log('list:' + client.getMaxListeners());
+        return res.json({ data });
+      } catch (err) {
+        return {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: err.message,
+        };
+      }
     }
   }
 
