@@ -19,7 +19,7 @@ export class DeliveryOrderTracking {
   @Column({ type: 'datetime' })
   Datetime: Date;
 
-  @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
-  @JoinColumn()
-  deliveryOrder: DeliveryOrder;
+  // @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
+  // @JoinColumn()
+  // deliveryOrder: DeliveryOrder;
 }
