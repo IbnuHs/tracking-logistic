@@ -6,9 +6,9 @@ export class DeliveryOrderTracking {
   @PrimaryColumn({ type: 'int', nullable: false })
   Oid: number;
 
-  // @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
-  // @JoinColumn({ name: 'OrderNo', referencedColumnName: 'OrderNo' })
-  // OrderNo: string;
+  @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
+  @JoinColumn({ name: 'OrderNo', referencedColumnName: 'OrderNo' })
+  OrderNo: string;
 
   @Column({ type: 'varchar', length: 30, nullable: false })
   Status: string;
@@ -19,7 +19,7 @@ export class DeliveryOrderTracking {
   @Column({ type: 'datetime' })
   Datetime: Date;
 
-  @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
-  @JoinColumn()
-  deliveryOrder: DeliveryOrder;
+  // @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
+  // @JoinColumn()
+  // deliveryOrder: DeliveryOrder;
 }

@@ -1,6 +1,9 @@
 # compiled output
 /dist
 /node_modules
+/.env
+/baileys_auth_info
+
 
 # Logs
 logs
@@ -26,7 +29,7 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
-.env
+
 
 # IDE - VSCode
 .vscode/*
