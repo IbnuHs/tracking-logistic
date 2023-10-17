@@ -1,79 +1,168 @@
 import { Injectable } from '@nestjs/common';
-import { useMultiFileAuthState } from '@whiskeysockets/baileys';
+import {
+  makeInMemoryStore,
+  useMultiFileAuthState,
+} from '@whiskeysockets/baileys';
 import makeWASocket from '@whiskeysockets/baileys/lib/Socket';
 import { DisconnectReason } from '@whiskeysockets/baileys/lib/Types';
-import { fetchLatestBaileysVersion } from '@whiskeysockets/baileys/lib/Utils';
-import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
+import {
+  fetchLatestBaileysVersion,
+  makeCacheableSignalKeyStore,
+} from '@whiskeysockets/baileys/lib/Utils';
 import { isJidBroadcast } from '@whiskeysockets/baileys/lib/WABinary';
+import * as QRCode from 'qrcode';
+// import pino from 'pino';
+import { MailerService } from '@nestjs-modules/mailer/dist';
+import { retry } from 'rxjs';
+import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
+const pino = require('pino');
+import * as fs from 'fs';
+// const QRCode = require('qrcode');
 
 @Injectable()
 export class WhatsappBaileysService {
-  public sock;
-  public qrCode;
+  constructor(private readonly mailService: MailerService) {}
+  public sock: any;
+  public qrCode: any;
+  private store: any;
 
-  async onAppBootstrap() {
-    console.log('Running connecte Whatsapp on server start');
-    await this.connectWhatsapp();
-  }
-
-  async connectWhatsapp() {
+  async initWhatsapp() {
+    console.log('init whatsapp');
+    const P = pino({
+      level: 'silent',
+    });
+    const { state, saveCreds } =
+      await useMultiFileAuthState('baileys_auth_info');
+    const { version, isLatest } = await fetchLatestBaileysVersion();
     try {
-      const { state, saveCreds } =
-        await useMultiFileAuthState('baileys_auth_info');
-      const { version, isLatest } = await fetchLatestBaileysVersion();
-
       this.sock = makeWASocket({
-        printQRInTerminal: true,
-        auth: state,
+        printQRInTerminal: false,
         version,
-        shouldIgnoreJid: (jid) => isJidBroadcast(jid),
+        logger: P,
+        auth: {
+          creds: state.creds,
+          keys: makeCacheableSignalKeyStore(state.keys, P),
+        },
+        // shouldIgnoreJid: (jid) => isJidBroadcast(jid),
       });
-      // store.bind(sock.ev);
-      // sock.multi = true;
+      makeInMemoryStore.bind(this.sock.ev);
+      this.sock.ev.on('creds.update', saveCreds);
+      this.sock.ev.process(async (events) => {
+        if (events['connection.update']) {
+          console.log('update');
+          const update = events['connection.update'];
+          const { connection, lastDisconnect, qr } = update;
+
+          if (connection === 'open') {
+            console.log('connection open');
+            console.log('WHATSAAPP SIAP DI GUNAKAN');
+          }
+          if (connection === 'close') {
+            if (
+              lastDisconnect &&
+              lastDisconnect.error &&
+              lastDisconnect.error.output &&
+              lastDisconnect.error.output.statusCode !==
+                DisconnectReason.loggedOut
+            ) {
+              console.log('closed connection');
+              this.initWhatsapp();
+            } else {
+              console.log('Connection Closed. You are Logged Out.');
+              try {
+                fs.unlinkSync('./baileys_auth_info/creds.json');
+                await this.mailService.sendMail({
+                  to: 'cindybela22@gmail.com',
+                  subject: 'Whatsapp Message',
+                  text: 'Anda Telah Logout',
+                  html: '<h1><b>Akun Whatsapp Anda Telah Logout</b></h1>',
+                });
+                console.log('Sesi Berhasil Di hapus');
+                setTimeout(async () => {
+                  await this.initWhatsapp();
+                }, 10000);
+              } catch (error) {
+                console.log(error.message);
+                return error.message;
+              }
+            }
+          }
+          if (qr) {
+            // console.log(qr);
+            console.log('qr Ready');
+            this.qrCode = qr;
+            await this.sendQr();
+            // await this.generateQRCode();
+          }
+          // console.log(this.qrCode);
+        }
+      });
     } catch (error) {
       return error.message;
     }
   }
+  async generateQRCode() {
+    return new Promise((resolve, reject) => {
+      // console.log('this qr', this.qrCode);
+      if (this.qrCode) {
+        // console.log('qrCode : ', this.qrCode);
+        QRCode.toFile('qrCode.png', this.qrCode, (err, url) => {
+          if (err) {
+            console.log('Gagal generate qrCode image');
+            reject('Gagal generate qrCode image');
+          } else {
+            console.log('Berhasil generate QR Code image');
+            resolve(url);
+          }
+        });
+      } else {
+        console.log('QR code belum tersedia');
+        reject('QR code belum tersedia');
+      }
+    });
+  }
 
-  async initWhatsapp(authState?: any, saveCreds?: any) {
+  async sendQr() {
     try {
-      this.sock = makeWASocket({
-        printQRInTerminal: true,
-        auth: authState,
-        shouldIgnoreJid: (jid) => isJidBroadcast(jid),
+      await this.generateQRCode();
+      // console.log('tttttt');
+      await this.mailService.sendMail({
+        to: 'cindybela22@gmail.com',
+        subject: 'Qr Code To Login',
+        html: `Embedded image: <img src="cid:unique@cid"/>`,
+        attachments: [
+          {
+            filename: 'qrCode.png',
+            path: './qrCode.png',
+            cid: 'qrCode',
+          },
+        ],
       });
-
-      this.sock.ev.on('connection.update', async (update: any) => {
-        const { connection, lastDisconnect, qr } = update;
-
-        if (connection === 'open') {
-          console.log('connection open');
-        }
-        if (connection === 'close') {
-          const shouldReconnect =
-            lastDisconnect.error?.output?.statusCode !==
-            DisconnectReason.loggedOut;
-
-          console.log(
-            'connection closed due to ',
-            lastDisconnect.error,
-            ', reconnecting ',
-            shouldReconnect,
-          );
-
-          if (shouldReconnect) {
-            if (saveCreds) {
-              await saveCreds(this.sock.authstate);
-            }
-          }
-          if (qr) {
-            this.qrCode = qr;
-          }
-          console.log(this.qrCode);
-        }
-      });
+      console.log('Berhasil mengirim QrCode');
+      return {
+        message: 'Qr Code Berhasil di kirim',
+      };
     } catch (error) {
-      return error.message;
+      console.log(error);
+      return {
+        message: error.message,
+      };
+    }
+  }
+
+  // SEND MESSAGE VIA WHATSAPP BAILEYS
+  async sendMessageBaileys(sendAccessCodeWA: SendAccessWADto) {
+    try {
+      await this.sock.sendMessage(`${sendAccessCodeWA.phone}@s.whatsapp.net`, {
+        text: `Kode Akses Anda : ${sendAccessCodeWA.AccessCode}, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : ${sendAccessCodeWA.OrderNo}`,
+      });
+      return {
+        message: 'Kode Akses Berhasil Di kirim',
+      };
+    } catch (error) {
+      return {
+        message: error.message,
+      };
     }
   }
 }

@@ -12,10 +12,14 @@ import { CreateSendAccessCodeDto } from './dto/create-send-access-code.dto';
 import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
+import { WhatsappBaileysService } from './baileys.service';
 
 @Controller('send-access-code')
 export class SendAccessCodeController {
-  constructor(private readonly sendAccessCodeService: SendAccessCodeService) {}
+  constructor(
+    private readonly sendAccessCodeService: SendAccessCodeService,
+    private readonly baileyService: WhatsappBaileysService,
+  ) {}
 
   @Post()
   @UsePipes(new ValidationPipe())
@@ -40,11 +44,11 @@ export class SendAccessCodeController {
     return this.sendAccessCodeService.sendViaEmail(sendEmailDto);
   }
 
-  @UsePipes(new ValidationPipe())
-  @Post('/whatsapp')
-  sendWhatsapp(@Body() sendWADto: SendAccessWADto, @Res() res: Response) {
-    return this.sendAccessCodeService.sendViaWhatsapp(sendWADto, res);
-  }
+  // @UsePipes(new ValidationPipe())
+  // @Post('/whatsapp')
+  // sendWhatsapp(@Body() sendWADto: SendAccessWADto, @Res() res: Response) {
+  //   return this.sendAccessCodeService.sendViaWhatsapp(sendWADto, res);
+  // }
 
   @Post('/whatsappTwilio')
   sendWhatsappTwilio(@Body() sendWADto: SendAccessWADto) {
@@ -52,10 +56,7 @@ export class SendAccessCodeController {
   }
 
   @Post('/whatsapp-baileys')
-  sendWABaileys(@Body() sendWADto: SendAccessWADto, @Res() respons: Response) {
-    return this.sendAccessCodeService.sendViaWhatsappBaileys(
-      sendWADto,
-      respons,
-    );
+  sendWABaileys(@Body() sendWADto: SendAccessWADto) {
+    return this.baileyService.sendMessageBaileys(sendWADto);
   }
 }

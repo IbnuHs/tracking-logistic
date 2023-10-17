@@ -48,6 +48,8 @@ export class TrackingLogisticService {
         customerAddress: dataDeliveryOrder.customer.Address,
         receiverName: dataDeliveryOrder.Receiver,
         receiverAddress: dataDeliveryOrder.ReceiverAddress,
+        email: dataDeliveryOrder.customer.Email,
+        phone: dataDeliveryOrder.customer.Phone,
       },
     };
   }

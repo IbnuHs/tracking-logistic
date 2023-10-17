@@ -46,7 +46,7 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     let res: Response;
-    await this.generateWhatsapp(res);
+    await this.baileysService.initWhatsapp();
   }
 
   async sendAccessCode(
@@ -291,7 +291,7 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
           );
 
           if (shouldReconnect) {
-            this.baileysService.connectWhatsapp();
+            // this.baileysService.connectWhatsapp();
           }
         }
       });
