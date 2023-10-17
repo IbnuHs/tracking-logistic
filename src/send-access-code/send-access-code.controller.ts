@@ -40,11 +40,11 @@ export class SendAccessCodeController {
     return this.sendAccessCodeService.sendViaEmail(sendEmailDto);
   }
 
-  @UsePipes(new ValidationPipe())
-  @Post('/whatsapp')
-  sendWhatsapp(@Body() sendWADto: SendAccessWADto, @Res() res: Response) {
-    return this.sendAccessCodeService.sendViaWhatsapp(sendWADto, res);
-  }
+  // @UsePipes(new ValidationPipe())
+  // @Post('/whatsapp')
+  // sendWhatsapp(@Body() sendWADto: SendAccessWADto, @Res() res: Response) {
+  //   return this.sendAccessCodeService.sendViaWhatsapp(sendWADto, res);
+  // }
 
   @Post('/whatsappTwilio')
   sendWhatsappTwilio(@Body() sendWADto: SendAccessWADto) {
