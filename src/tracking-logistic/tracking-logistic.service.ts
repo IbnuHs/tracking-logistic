@@ -37,6 +37,14 @@ export class TrackingLogisticService {
 
     if (!dataDeliveryOrder)
       throw new NotFoundException('Data Delivery Tidak Ditemukan');
+    const email = dataDeliveryOrder.customer.Email;
+    const [userName, domain] = email.split('@');
+    const maskedEmail =
+      userName.charAt(0) + '*'.repeat(userName.length - 1) + '@' + domain;
+    // console.log(maskedUser);
+    const phoneNumber = dataDeliveryOrder.customer.Phone;
+    const maskedPhoneNumber =
+      phoneNumber.slice(0, 3) + '*****' + phoneNumber.slice(-3);
 
     return {
       statusCode: HttpStatus.OK,
@@ -48,8 +56,8 @@ export class TrackingLogisticService {
         customerAddress: dataDeliveryOrder.customer.Address,
         receiverName: dataDeliveryOrder.Receiver,
         receiverAddress: dataDeliveryOrder.ReceiverAddress,
-        email: dataDeliveryOrder.customer.Email,
-        phone: dataDeliveryOrder.customer.Phone,
+        email: maskedEmail,
+        phone: maskedPhoneNumber,
       },
     };
   }
