@@ -72,7 +72,7 @@ export class WhatsappBaileysService {
               try {
                 fs.unlinkSync('./baileys_auth_info/creds.json');
                 await this.mailService.sendMail({
-                  to: 'cindybela22@gmail.com',
+                  to: 'agungfir20@gmail.com',
                   subject: 'Whatsapp Message',
                   text: 'Anda Telah Logout',
                   html: '<h1><b>Akun Whatsapp Anda Telah Logout</b></h1>',
