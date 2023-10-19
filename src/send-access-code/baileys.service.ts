@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   makeInMemoryStore,
   useMultiFileAuthState,
@@ -9,19 +9,27 @@ import {
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
 } from '@whiskeysockets/baileys/lib/Utils';
-import { isJidBroadcast } from '@whiskeysockets/baileys/lib/WABinary';
 import * as QRCode from 'qrcode';
 // import pino from 'pino';
 import { MailerService } from '@nestjs-modules/mailer/dist';
 import { retry } from 'rxjs';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
 const pino = require('pino');
+// import * as pino from 'pino';
 import * as fs from 'fs';
-// const QRCode = require('qrcode');
+import { InjectRepository } from '@nestjs/typeorm';
+import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
+import { Repository } from 'typeorm';
+import { SendAccessCodeService } from './send-access-code.service';
+import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 
 @Injectable()
 export class WhatsappBaileysService {
-  constructor(private readonly mailService: MailerService) {}
+  constructor(
+    private readonly mailService: MailerService,
+    @InjectRepository(DeliveryOrder)
+    private readonly deliveryOrderRepository: Repository<DeliveryOrder>,
+  ) {}
   public sock: any;
   public qrCode: any;
   private store: any;
@@ -153,10 +161,18 @@ export class WhatsappBaileysService {
   // SEND MESSAGE VIA WHATSAPP BAILEYS
   async sendMessageBaileys(sendAccessCodeWA: SendAccessWADto) {
     try {
-      await this.sock.sendMessage(`${sendAccessCodeWA.phone}@s.whatsapp.net`, {
-        text: `Kode Akses Anda : ${sendAccessCodeWA.AccessCode}, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : ${sendAccessCodeWA.OrderNo}`,
+      const user = await this.deliveryOrderRepository.findOne({
+        where: {
+          OrderNo: sendAccessCodeWA.OrderNo,
+        },
+        relations: { customer: true },
+      });
+      const phoneNumber = '62' + user.customer.Phone.slice(1);
+      await this.sock.sendMessage(`${phoneNumber}@s.whatsapp.net`, {
+        text: `Kode Akses Anda : *${user.Access}*, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : *${user.OrderNo}*`,
       });
       return {
+        status: HttpStatus.OK,
         message: 'Kode Akses Berhasil Di kirim',
       };
     } catch (error) {
