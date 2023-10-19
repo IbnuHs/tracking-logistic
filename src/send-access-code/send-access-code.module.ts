@@ -8,7 +8,7 @@ import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 import { DeliveryOrderTracking } from 'src/tracking-logistic/Entities/delivery-order-app.entity';
 import { WhatsappBaileysService } from './baileys.service';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { MailerModule, MailerService } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
