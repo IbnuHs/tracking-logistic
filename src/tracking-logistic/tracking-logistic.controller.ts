@@ -7,7 +7,6 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { DeliveryOrderDto } from './dto/delivery-tracking.dto';
 import { TrackingLogisticService } from './tracking-logistic.service';
 import { TrackingAndShipmentDto } from './dto/trackingAndShipment-dto';
 
@@ -23,15 +22,11 @@ export class TrackingLogisticController {
     return this.trackingLogisticService.getDeliveryOrderByOrderNo(orderNo);
   }
 
+  @UsePipes(new ValidationPipe())
   @Post('trackingAndShipment')
   trackingOrder(@Body() trackingAndShipmentDto: TrackingAndShipmentDto) {
     return this.trackingLogisticService.TrackingAndShipmentinfo(
       trackingAndShipmentDto,
     );
   }
-
-  // @Get('shipmentInfo')
-  // shipmentInfo(@Body() deliveryOrderDto: DeliveryOrderDto) {
-  //   return this.trackingLogisticService.getShipmentInfo(deliveryOrderDto);
-  // }
 }
