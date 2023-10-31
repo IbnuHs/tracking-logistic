@@ -10,17 +10,12 @@ import {
   makeCacheableSignalKeyStore,
 } from '@whiskeysockets/baileys/lib/Utils';
 import * as QRCode from 'qrcode';
-// import pino from 'pino';
 import { MailerService } from '@nestjs-modules/mailer/dist';
-import { retry } from 'rxjs';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
 const pino = require('pino');
-// import * as pino from 'pino';
 import * as fs from 'fs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Customer } from 'src/tracking-logistic/Entities/customer.entity';
 import { Repository } from 'typeorm';
-import { SendAccessCodeService } from './send-access-code.service';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 
 @Injectable()
