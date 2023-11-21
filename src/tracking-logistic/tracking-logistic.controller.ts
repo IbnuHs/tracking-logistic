@@ -29,9 +29,4 @@ export class TrackingLogisticController {
       trackingAndShipmentDto,
     );
   }
-
-  // @Get('shipmentInfo')
-  // shipmentInfo(@Body() deliveryOrderDto: DeliveryOrderDto) {
-  //   return this.trackingLogisticService.getShipmentInfo(deliveryOrderDto);
-  // }
 }
