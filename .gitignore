@@ -3,6 +3,7 @@
 /node_modules
 .env
 /baileys_auth_info
+qrCode.png
 
 
 # Logs
