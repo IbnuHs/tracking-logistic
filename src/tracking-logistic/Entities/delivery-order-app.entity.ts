@@ -1,10 +1,17 @@
-import { Column, Entity, JoinColumn, PrimaryColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  PrimaryColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('transp_deliveryorder_tracking_app')
 export class DeliveryOrderTracking {
-  @PrimaryColumn({ type: 'int', nullable: false })
-  Oid: number;
+  @PrimaryGeneratedColumn('uuid')
+  Oid: string;
 
   @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
   @JoinColumn({ name: 'OrderNo', referencedColumnName: 'OrderNo' })
