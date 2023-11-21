@@ -39,12 +39,14 @@ export class TrackingLogisticService {
       throw new NotFoundException('Data Delivery Tidak Ditemukan');
     const email = dataDeliveryOrder.customer.Email;
     const [userName, domain] = email.split('@');
-    const maskedEmail =
-      userName.charAt(0) + '*'.repeat(userName.length - 1) + '@' + domain;
+    const maskedEmail = email
+      ? userName.charAt(0) + '*'.repeat(userName.length - 1) + '@' + domain
+      : null;
     // console.log(maskedUser);
     const phoneNumber = dataDeliveryOrder.customer.Phone;
-    const maskedPhoneNumber =
-      phoneNumber.slice(0, 3) + '*****' + phoneNumber.slice(-3);
+    const maskedPhoneNumber = phoneNumber
+      ? phoneNumber.slice(0, 3) + '*****' + phoneNumber.slice(-3)
+      : null;
 
     return {
       statusCode: HttpStatus.OK,

@@ -5,6 +5,8 @@ import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.mo
 import { RatingModule } from './rating/rating.module';
 import { CustomerServiceModule } from './customer-service/customer-service.module';
 import { QuickOrderModule } from './quick-order/quick-order.module';
+import { InsertDataModule } from './insert-data/insert-data.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { QuickOrderModule } from './quick-order/quick-order.module';
     RatingModule,
     CustomerServiceModule,
     QuickOrderModule,
+    InsertDataModule,
+    HttpModule,
   ],
   controllers: [
     // AppController

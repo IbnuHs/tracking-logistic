@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { Customer } from './customer.entity';
 import { DeliveryOrderTracking } from './delivery-order-app.entity';
-import { type } from 'os';
 
 @Entity('transp_deliveryorder_app')
 export class DeliveryOrder {
