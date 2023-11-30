@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SendAccessCodeModule } from './send-access-code/send-access-code.module';
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
-import { RatingModule } from './rating/rating.module';
-import { CustomerServiceModule } from './customer-service/customer-service.module';
-import { QuickOrderModule } from './quick-order/quick-order.module';
 import { InsertDataModule } from './insert-data/insert-data.module';
 import { HttpModule } from '@nestjs/axios';
 
@@ -25,9 +22,6 @@ import { HttpModule } from '@nestjs/axios';
     // DeliveryOrderTrackingModule,
     SendAccessCodeModule,
     TrackingLogisticModule,
-    RatingModule,
-    CustomerServiceModule,
-    QuickOrderModule,
     InsertDataModule,
     HttpModule,
   ],
