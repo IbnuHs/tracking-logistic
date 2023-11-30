@@ -146,11 +146,11 @@ export class WhatsappBaileysService {
         where: {
           OrderNo: sendAccessCodeWA.OrderNo,
         },
-        relations: { customer: true },
       });
-      const phoneNumber = '62' + user.customer.Phone.slice(1);
+      const accessCode = user.CustomerId.slice(-4);
+      const phoneNumber = '62' + user.Phone.slice(1);
       await this.sock.sendMessage(`${phoneNumber}@s.whatsapp.net`, {
-        text: `Kode Akses Anda : *${user.Access}*, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : *${user.OrderNo}*`,
+        text: `Kode Akses Anda : *${accessCode}*, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : *${user.OrderNo}*`,
       });
       return {
         status: HttpStatus.OK,

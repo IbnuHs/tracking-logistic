@@ -52,8 +52,6 @@ export class InsertDataService {
       if (!dataExist) {
         const dataInternal = new DeliveryOrder();
         dataInternal.Oid = data.oid;
-        dataInternal.Branch = data.branch;
-        dataInternal.Access = '1234';
         dataInternal.OrderNo = data.orderNo;
         dataInternal.Services = data.services;
         dataInternal.Via = data.via;
@@ -62,7 +60,6 @@ export class InsertDataService {
         dataInternal.Orides = data.orides;
         dataInternal.Receiver = data.receiver;
         dataInternal.ReceiverAddress = data.receiverAddress;
-        dataInternal.customer = data.customerOid;
 
         await this.deliveryOrderRepository.save(dataInternal);
       }

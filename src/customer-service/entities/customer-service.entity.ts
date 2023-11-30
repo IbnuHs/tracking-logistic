@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity('customer_service_app')
+@Entity()
 export class CustomerService {
   @PrimaryColumn({ type: 'varchar', length: 40 })
   Oid: string;

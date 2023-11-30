@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SendAccessCodeModule } from './send-access-code/send-access-code.module';
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
-import { CustomerServiceModule } from './customer-service/customer-service.module';
 import { InsertDataModule } from './insert-data/insert-data.module';
 import { HttpModule } from '@nestjs/axios';
 
@@ -20,7 +19,6 @@ import { HttpModule } from '@nestjs/axios';
     }),
     SendAccessCodeModule,
     TrackingLogisticModule,
-    CustomerServiceModule,
     InsertDataModule,
     HttpModule,
   ],
