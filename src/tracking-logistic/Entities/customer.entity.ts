@@ -5,9 +5,8 @@ import {
   PrimaryColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { DeliveryOrder } from './delivery-order.entity';
 
-@Entity('customers_app')
+@Entity()
 export class Customer {
   @PrimaryColumn({ type: 'varchar', length: 40 })
   Oid: string;
@@ -30,6 +29,6 @@ export class Customer {
   @CreateDateColumn()
   EntryDate: Date;
 
-  @OneToMany(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.customer)
-  deliveryOrders: DeliveryOrder[];
+  // @OneToMany(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.customer)
+  // deliveryOrders: DeliveryOrder[];
 }

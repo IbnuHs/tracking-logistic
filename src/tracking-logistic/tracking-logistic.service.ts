@@ -29,21 +29,17 @@ export class TrackingLogisticService {
       where: {
         OrderNo: OrderNo,
       },
-      relations: {
-        customer: true,
-      },
     });
 
     if (!dataDeliveryOrder)
       throw new NotFoundException('Data Delivery Tidak Ditemukan');
-    const email = dataDeliveryOrder.customer.Email;
+    const email = dataDeliveryOrder.Email;
     const [userName, domain] = email.split('@');
     const maskedEmail = email
       ? userName.charAt(0) + '*'.repeat(userName.length - 1) + '@' + domain
       : null;
-    // console.log(maskedUser);
 
-    const phoneNumber = dataDeliveryOrder.customer.Phone;
+    const phoneNumber = dataDeliveryOrder.Phone;
     const maskedPhoneNumber = phoneNumber
       ? phoneNumber.slice(0, 3) + '*****' + phoneNumber.slice(-3)
       : null;
@@ -52,10 +48,11 @@ export class TrackingLogisticService {
       statusCode: HttpStatus.OK,
       message: 'Data Order Detail ditemukan!',
       data: {
+        refNumber: dataDeliveryOrder.RefNo,
         OrderNo: dataDeliveryOrder.OrderNo,
-        customerId: dataDeliveryOrder.customer.CustomerId,
-        customerName: dataDeliveryOrder.customer.Customer,
-        customerAddress: dataDeliveryOrder.customer.Address,
+        orderDate: dataDeliveryOrder.OrderDate,
+        commodity: dataDeliveryOrder.Commodity,
+        remarks: dataDeliveryOrder.Remarks,
         receiverName: dataDeliveryOrder.Receiver,
         receiverAddress: dataDeliveryOrder.ReceiverAddress,
         email: maskedEmail,
@@ -65,9 +62,7 @@ export class TrackingLogisticService {
   }
 
   // Handler Get Tracking Info and Shipment Info
-  async TrackingAndShipmentinfo(
-    trackingDto: TrackingAndShipmentDto,
-  ): Promise<object> {
+  async TrackingAndShipmentinfo(trackingDto: TrackingAndShipmentDto) {
     // Shipment Informaton
     const { OrderNo, Access } = trackingDto;
     const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
@@ -75,12 +70,16 @@ export class TrackingLogisticService {
         OrderNo: OrderNo,
       },
       relations: {
-        // customer: true,
         tracking: true,
       },
     });
+    if (!dataDeliveryOrder)
+      throw new NotFoundException('No Order Tidak Di Temukan');
+
+    // console.log(dataDeliveryOrder);
+    const AccesCode = dataDeliveryOrder.CustomerId.slice(-4);
     // Checking Access Code
-    if (dataDeliveryOrder.Access !== Access)
+    if (Access !== AccesCode)
       throw new UnauthorizedException('Kode Akses Anda Salah');
 
     // Sorting Status Tracking
