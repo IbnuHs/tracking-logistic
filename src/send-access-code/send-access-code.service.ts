@@ -9,6 +9,7 @@ import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.ent
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
 import { WhatsappBaileysService } from './baileys.service';
 import { OnApplicationBootstrap } from '@nestjs/common/interfaces';
+import { access } from 'fs';
 
 @Injectable()
 export class SendAccessCodeService implements OnApplicationBootstrap {
@@ -33,9 +34,6 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
       where: {
         OrderNo: OrderNo,
       },
-      relations: {
-        customer: true,
-      },
     });
   }
 
@@ -51,12 +49,13 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
         pass: process.env.GMAIL_PASS,
       },
     });
+    const Access = dataDeliveryOrder.CustomerId.slice(-4);
 
     const mailOptions = {
       from: 'logistictesting33@gmail.com',
-      to: dataDeliveryOrder.customer.Email,
+      to: dataDeliveryOrder.Email,
       subject: 'Akses Kode Tracking Logistik',
-      html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.OrderNo}</b> adalah <br> <b>${dataDeliveryOrder.Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
+      html: `Kode akses anda untuk pemesanan dengan nomor order <b>${sendEmailDto.OrderNo}</b> adalah <br> <b>${Access}</b><br>Masukkan nomor untuk mengakses data. Harap jangan bagikan ke pihak lain.`,
     };
 
     transporter.sendMail(mailOptions, (err) => {
@@ -71,7 +70,7 @@ export class SendAccessCodeService implements OnApplicationBootstrap {
       statusCode: HttpStatus.OK,
       session: 'client',
       message: `Kode akses terkirim`,
-      email: dataDeliveryOrder.customer.Email,
+      email: dataDeliveryOrder.Email,
     };
   }
 }
