@@ -61,9 +61,9 @@ export class TrackingLogisticService {
     };
   }
 
-  // Handler Get Tracking Info and Shipment Info
-  async TrackingAndShipmentinfo(trackingDto: TrackingAndShipmentDto) {
-    // Shipment Informaton
+  async TrackingAndShipmentinfo(
+    trackingDto: TrackingAndShipmentDto,
+  ): Promise<object> {
     const { OrderNo, Access } = trackingDto;
     const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
       where: {
@@ -82,7 +82,6 @@ export class TrackingLogisticService {
     if (Access !== AccesCode)
       throw new UnauthorizedException('Kode Akses Anda Salah');
 
-    // Sorting Status Tracking
     dataDeliveryOrder.tracking.sort((a, b) => {
       return new Date(a.Datetime).getTime() - new Date(b.Datetime).getTime();
     });

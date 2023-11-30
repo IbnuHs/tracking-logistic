@@ -30,13 +30,12 @@ export class WhatsappBaileysService {
   private store: any;
 
   async initWhatsapp() {
-    console.log('init whatsapp');
     const P = pino({
       level: 'silent',
     });
     const { state, saveCreds } =
       await useMultiFileAuthState('baileys_auth_info');
-    const { version, isLatest } = await fetchLatestBaileysVersion();
+    const { version } = await fetchLatestBaileysVersion();
     try {
       this.sock = makeWASocket({
         printQRInTerminal: false,
@@ -46,19 +45,16 @@ export class WhatsappBaileysService {
           creds: state.creds,
           keys: makeCacheableSignalKeyStore(state.keys, P),
         },
-        // shouldIgnoreJid: (jid) => isJidBroadcast(jid),
       });
       makeInMemoryStore.bind(this.sock.ev);
       this.sock.ev.on('creds.update', saveCreds);
       this.sock.ev.process(async (events) => {
         if (events['connection.update']) {
-          console.log('update');
           const update = events['connection.update'];
           const { connection, lastDisconnect, qr } = update;
 
           if (connection === 'open') {
-            console.log('connection open');
-            console.log('WHATSAAPP SIAP DI GUNAKAN');
+            console.log('WHATSAPP SIAP DI GUNAKAN');
           }
           if (connection === 'close') {
             if (
@@ -75,7 +71,7 @@ export class WhatsappBaileysService {
               try {
                 fs.unlinkSync('./baileys_auth_info/creds.json');
                 await this.mailService.sendMail({
-                  to: 'cindybela22@gmail.com',
+                  to: 'mait.merryska@gmail.com',
                   subject: 'Whatsapp Message',
                   text: 'Anda Telah Logout',
                   html: '<h1><b>Akun Whatsapp Anda Telah Logout</b></h1>',
@@ -85,19 +81,14 @@ export class WhatsappBaileysService {
                   await this.initWhatsapp();
                 }, 10000);
               } catch (error) {
-                console.log(error.message);
                 return error.message;
               }
             }
           }
           if (qr) {
-            // console.log(qr);
-            console.log('qr Ready');
             this.qrCode = qr;
             await this.sendQr();
-            // await this.generateQRCode();
           }
-          // console.log(this.qrCode);
         }
       });
     } catch (error) {
@@ -106,9 +97,7 @@ export class WhatsappBaileysService {
   }
   async generateQRCode() {
     return new Promise((resolve, reject) => {
-      // console.log('this qr', this.qrCode);
       if (this.qrCode) {
-        // console.log('qrCode : ', this.qrCode);
         QRCode.toFile('qrCode.png', this.qrCode, (err, url) => {
           if (err) {
             console.log('Gagal generate qrCode image');
@@ -128,9 +117,8 @@ export class WhatsappBaileysService {
   async sendQr() {
     try {
       await this.generateQRCode();
-      // console.log('tttttt');
       await this.mailService.sendMail({
-        to: 'cindybela22@gmail.com',
+        to: 'mait.merryska@gmail.com',
         subject: 'Qr Code To Login',
         html: `Embedded image: <img src="cid:unique@cid"/>`,
         attachments: [
@@ -146,14 +134,12 @@ export class WhatsappBaileysService {
         message: 'Qr Code Berhasil di kirim',
       };
     } catch (error) {
-      console.log(error);
       return {
         message: error.message,
       };
     }
   }
 
-  // SEND MESSAGE VIA WHATSAPP BAILEYS
   async sendMessageBaileys(sendAccessCodeWA: SendAccessWADto) {
     try {
       const user = await this.deliveryOrderRepository.findOne({
