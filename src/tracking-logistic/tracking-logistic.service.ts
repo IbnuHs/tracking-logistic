@@ -41,7 +41,6 @@ export class TrackingLogisticService {
     const maskedEmail = email
       ? userName.charAt(0) + '*'.repeat(userName.length - 1) + '@' + domain
       : null;
-    // console.log(maskedUser);
 
     const phoneNumber = dataDeliveryOrder.customer.Phone;
     const maskedPhoneNumber = phoneNumber
@@ -64,26 +63,21 @@ export class TrackingLogisticService {
     };
   }
 
-  // Handler Get Tracking Info and Shipment Info
   async TrackingAndShipmentinfo(
     trackingDto: TrackingAndShipmentDto,
   ): Promise<object> {
-    // Shipment Informaton
     const { OrderNo, Access } = trackingDto;
     const dataDeliveryOrder = await this.deliveryOrderRepository.findOne({
       where: {
         OrderNo: OrderNo,
       },
       relations: {
-        // customer: true,
         tracking: true,
       },
     });
-    // Checking Access Code
     if (dataDeliveryOrder.Access !== Access)
       throw new UnauthorizedException('Kode Akses Anda Salah');
 
-    // Sorting Status Tracking
     dataDeliveryOrder.tracking.sort((a, b) => {
       return new Date(a.Datetime).getTime() - new Date(b.Datetime).getTime();
     });

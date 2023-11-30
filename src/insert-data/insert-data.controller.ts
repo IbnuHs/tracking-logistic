@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { InsertDataService } from './insert-data.service';
 import { CreateInsertDatumDto } from './dto/create-insert-datum.dto';
-import { get } from 'http';
 
 @Controller('insert-data')
 export class InsertDataController {

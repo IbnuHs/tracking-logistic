@@ -34,7 +34,6 @@ export class CustomerServiceService {
         secret: process.env.ACCESS_TOKEN_SECRET,
         expiresIn: '60s',
       });
-      // console.log(process.env.ACCESS_TOKEN_SECRET);
       return {
         statusCode: HttpStatus.OK,
         accesToken: accessToken,
