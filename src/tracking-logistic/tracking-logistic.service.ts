@@ -55,7 +55,6 @@ export class TrackingLogisticService {
         remarks: dataDeliveryOrder.Remarks,
         receiverName: dataDeliveryOrder.Receiver,
         receiverAddress: dataDeliveryOrder.ReceiverAddress,
-        customerAddress: dataDeliveryOrder.CustomerAddres,
         email: maskedEmail,
         phone: maskedPhoneNumber,
       },
@@ -96,6 +95,7 @@ export class TrackingLogisticService {
         TypeOfHandling: dataDeliveryOrder.TypeOfHandling,
         TypeOfRate: dataDeliveryOrder.TypeOfRate,
         OriginDestination: dataDeliveryOrder.Orides,
+        customerAddress: dataDeliveryOrder.CustomerAddres,
       },
       Tracking: dataDeliveryOrder.tracking,
     };
