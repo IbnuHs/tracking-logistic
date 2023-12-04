@@ -49,7 +49,7 @@ export class DeliveryOrder {
   @Column({ type: 'varchar', length: 100, nullable: false })
   Orides: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   CustomerAddres: string;
 
   @Column({ type: 'varchar', length: 100 })
