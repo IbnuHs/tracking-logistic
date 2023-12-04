@@ -49,6 +49,9 @@ export class DeliveryOrder {
   @Column({ type: 'varchar', length: 100, nullable: false })
   Orides: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  CustomerAddres: string;
+
   @Column({ type: 'varchar', length: 100 })
   Receiver: string;
 
@@ -60,14 +63,4 @@ export class DeliveryOrder {
 
   @OneToMany(() => DeliveryOrderTracking, (tracking) => tracking.OrderNo)
   tracking: DeliveryOrderTracking[];
-
-  // @ManyToOne(() => Customer, (customer) => customer.Oid)
-  // @JoinColumn({ name: 'CustomerOid' })
-  // customer: Customer;
-
-  // @Column({ type: 'varchar', length: 40, nullable: false })
-  // Branch: string;
-
-  // @Column({ type: 'varchar', length: 10, nullable: false })
-  // Access: string;
 }
