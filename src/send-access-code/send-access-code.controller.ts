@@ -23,8 +23,9 @@ export class SendAccessCodeController {
     return this.sendAccessCodeService.sendViaEmail(sendEmailDto);
   }
 
-  @Post('/whatsapp-baileys')
+  @UsePipes(new ValidationPipe())
+  @Post('/whatsapp')
   sendWABaileys(@Body() sendWADto: SendAccessWADto) {
-    return this.baileyService.sendMessageBaileys(sendWADto);
+    return this.sendAccessCodeService.sendMessageBaileys(sendWADto);
   }
 }

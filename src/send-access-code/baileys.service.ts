@@ -17,6 +17,7 @@ import * as fs from 'fs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
+import { SendAccessCodeService } from './send-access-code.service';
 
 @Injectable()
 export class WhatsappBaileysService {
@@ -140,26 +141,5 @@ export class WhatsappBaileysService {
     }
   }
 
-  async sendMessageBaileys(sendAccessCodeWA: SendAccessWADto) {
-    try {
-      const user = await this.deliveryOrderRepository.findOne({
-        where: {
-          OrderNo: sendAccessCodeWA.OrderNo,
-        },
-      });
-      const accessCode = user.CustomerId.slice(-4);
-      const phoneNumber = '62' + user.Phone.slice(1);
-      await this.sock.sendMessage(`${phoneNumber}@s.whatsapp.net`, {
-        text: `Kode Akses Anda : *${accessCode}*, Silahkan gunakan untuk mengakses rincian informasi mengenai orderan Anda dengan no : *${user.OrderNo}*`,
-      });
-      return {
-        status: HttpStatus.OK,
-        message: 'Kode Akses Berhasil Di kirim',
-      };
-    } catch (error) {
-      return {
-        message: error.message,
-      };
-    }
-  }
+  
 }

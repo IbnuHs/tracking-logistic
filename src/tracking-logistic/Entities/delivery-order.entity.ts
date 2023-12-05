@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryColumn,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, PrimaryColumn, OneToMany } from 'typeorm';
 import { DeliveryOrderTracking } from './delivery-order-app.entity';
 
 @Entity('transp_deliveryorder_app')

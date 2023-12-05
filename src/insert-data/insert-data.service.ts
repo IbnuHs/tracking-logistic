@@ -92,5 +92,3 @@ export class InsertDataService {
     const res = await api.get('delivery-order/MKSPLP2023050249/tracking');
   }
 }
-
-
