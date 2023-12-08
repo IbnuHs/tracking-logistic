@@ -1,15 +1,9 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { DeliveryOrder } from './delivery-order.entity';
 
 @Entity('transp_deliveryorder_tracking_app')
 export class DeliveryOrderTracking {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ type: 'varchar', length: 40 })
   Oid: string;
 
   @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
@@ -24,8 +18,4 @@ export class DeliveryOrderTracking {
 
   @Column({ type: 'datetime' })
   Datetime: Date;
-
-  // @ManyToOne(() => DeliveryOrder, (deliveryOrder) => deliveryOrder.tracking)
-  // @JoinColumn()
-  // deliveryOrder: DeliveryOrder;
 }

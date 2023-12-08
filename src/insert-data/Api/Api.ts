@@ -1,9 +1,10 @@
 import axios from 'axios';
+import * as https from 'https';
 
 export const api = axios.create({
-  baseURL: 'https://transporter.kallatranslog.co.id/api/v1/',
+  baseURL: process.env.BASE_URL,
+  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   headers: {
     'x-api-key': '123',
-    'Content-type': 'application/json',
   },
 });
