@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { api } from './Api/api';
+
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
 import { DeliveryOrderTracking } from 'src/tracking-logistic/Entities/delivery-order-app.entity';
 import { Cron } from '@nestjs/schedule/dist';
@@ -14,6 +15,7 @@ export class InsertDataService {
     @InjectRepository(DeliveryOrderTracking)
     private readonly trackingRepository: Repository<DeliveryOrderTracking>,
   ) {}
+
 
   // Set Time To Inject DB
   @Cron('0 0 * * * *', {
@@ -87,8 +89,10 @@ export class InsertDataService {
     } catch (error) {
       console.log(error.message);
     }
+
     return {
       message: 'Success',
     };
   }
+
 }

@@ -17,22 +17,12 @@ import { HttpModule } from '@nestjs/axios';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    // Delivery,
-    // CustomerModule,
-    // DeliveryOrderTrackingModule,
     SendAccessCodeModule,
     TrackingLogisticModule,
     InsertDataModule,
     HttpModule,
   ],
-  controllers: [
-    // AppController
-  ],
-  providers: [
-    // AppService,
-    // CustomerService,
-    // DeliveryOrderService,
-    // DeliveryOrderTrackingService,
-  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

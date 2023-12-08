@@ -1,15 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   ValidationPipe,
-  Res,
   UsePipes,
 } from '@nestjs/common';
 import { SendAccessCodeService } from './send-access-code.service';
-import { CreateSendAccessCodeDto } from './dto/create-send-access-code.dto';
-import { Response } from 'express';
 import { SendAccessEmailDto } from './dto/sendAccessCodeEmail.dto copy';
 import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
 import { WhatsappBaileysService } from './baileys.service';
@@ -27,8 +23,9 @@ export class SendAccessCodeController {
     return this.sendAccessCodeService.sendViaEmail(sendEmailDto);
   }
 
-  @Post('/whatsapp-baileys')
+  @UsePipes(new ValidationPipe())
+  @Post('/whatsapp')
   sendWABaileys(@Body() sendWADto: SendAccessWADto) {
-    return this.baileyService.sendMessageBaileys(sendWADto);
+    return this.sendAccessCodeService.sendMessageBaileys(sendWADto);
   }
 }

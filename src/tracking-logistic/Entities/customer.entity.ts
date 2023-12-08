@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryColumn, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class Customer {
