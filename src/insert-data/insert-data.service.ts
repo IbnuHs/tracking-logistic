@@ -16,14 +16,13 @@ export class InsertDataService {
     private readonly trackingRepository: Repository<DeliveryOrderTracking>,
   ) {}
 
-
   // Set Time To Inject DB
-  @Cron('0 0 * * * *', {
+  @Cron('00 00 * * * *', {
     timeZone: 'Asia/Makassar',
   })
   InjectData() {
-    console.log('Inject Succesfully');
     this.insertData();
+    console.log('Inject Succesfully');
   }
   async inputTracking(item) {
     const res = await api.get(`delivery-order/${item.OrderNo}/tracking`);
@@ -94,5 +93,4 @@ export class InsertDataService {
       message: 'Success',
     };
   }
-
 }
