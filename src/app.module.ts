@@ -4,6 +4,7 @@ import { SendAccessCodeModule } from './send-access-code/send-access-code.module
 import { TrackingLogisticModule } from './tracking-logistic/tracking-logistic.module';
 import { InsertDataModule } from './insert-data/insert-data.module';
 import { HttpModule } from '@nestjs/axios';
+import { ShipmentPriceModule } from './shipment-price/shipment-price.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HttpModule } from '@nestjs/axios';
     TrackingLogisticModule,
     InsertDataModule,
     HttpModule,
+    ShipmentPriceModule,
   ],
   controllers: [],
   providers: [],
