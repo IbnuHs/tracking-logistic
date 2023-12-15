@@ -24,7 +24,6 @@ async function bootstrap() {
   });
   SwaggerModule.setup('api/v1/docs', app, document);
 
-
   await app.listen(3000);
 }
 bootstrap();

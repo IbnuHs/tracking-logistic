@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   makeInMemoryStore,
   useMultiFileAuthState,
@@ -11,13 +11,11 @@ import {
 } from '@whiskeysockets/baileys/lib/Utils';
 import * as QRCode from 'qrcode';
 import { MailerService } from '@nestjs-modules/mailer/dist';
-import { SendAccessWADto } from './dto/sendAccessCodeWA.dto';
 const pino = require('pino');
 import * as fs from 'fs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DeliveryOrder } from 'src/tracking-logistic/Entities/delivery-order.entity';
-import { SendAccessCodeService } from './send-access-code.service';
 
 @Injectable()
 export class WhatsappBaileysService {
@@ -140,6 +138,4 @@ export class WhatsappBaileysService {
       };
     }
   }
-
-  
 }
