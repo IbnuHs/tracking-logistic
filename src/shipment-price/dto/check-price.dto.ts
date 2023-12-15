@@ -6,10 +6,10 @@ export class CheckPriceDto {
     example: 'GWDBGG2023030033',
   })
   @IsNotEmpty()
-  origin: string;
+  originId: number;
 
   @IsNotEmpty()
-  destionation: string;
+  destionationId: number;
 
   @IsNotEmpty()
   weight: number;

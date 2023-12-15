@@ -18,15 +18,21 @@ export class ShipmentPriceService {
       const shipmentRatePerKm = 100;
       const getOrigin = await this.locationRepository.findOne({
         where: {
-          kecamatan: checkPrice.origin,
+          id: checkPrice.originId,
         },
       });
 
       const getDestination = await this.locationRepository.findOne({
         where: {
-          kecamatan: checkPrice.destionation,
+          id: checkPrice.destionationId,
         },
       });
+      if (!getOrigin || !getDestination) {
+        return {
+          status: HttpStatus.NOT_FOUND,
+          message: 'Origin atau destination tidak ditemukan',
+        };
+      }
 
       const distance = Math.ceil(
         HaversineCalculator.haversineDistance(
