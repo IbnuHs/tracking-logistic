@@ -54,6 +54,9 @@ export class DeliveryOrder {
   @Column({ type: 'varchar', length: 40, nullable: false, unique: true })
   OrderNo: string;
 
-  @OneToMany(() => DeliveryOrderTracking, (tracking) => tracking.OrderNo)
+  @OneToMany(() => DeliveryOrderTracking, (tracking) => tracking.OrderNo, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   tracking: DeliveryOrderTracking[];
 }

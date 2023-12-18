@@ -11,9 +11,9 @@ export class Location {
   @Column({ type: 'varchar', length: '128' })
   kecamatan: string;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'decimal' })
   latitude: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'decimal' })
   longitude: number;
 }
