@@ -17,7 +17,7 @@ export class InsertDataService {
   ) {}
 
   // Set Time To Inject DB
-  @Cron('00 00 * * * *', {
+  @Cron('0 59 23 * * 1-7', {
     timeZone: 'Asia/Makassar',
   })
   InjectData() {
@@ -77,14 +77,35 @@ export class InsertDataService {
 
   async insertData() {
     try {
-      const result = await api.get('delivery-order?order=DESC&page=5&take=50');
-      const data = result.data.data;
-      await Promise.all(
-        data.map(async (item) => {
-          await this.inputDeliveryApp(item);
-          await this.inputTracking(item);
-        }),
+      const result = await api.get('delivery-order?order=DESC&page=1&take=50');
+      const deliveryOrderCount = await this.deliveryOrderRepository.count();
+      const numDataToGet = Math.ceil(
+        (result.data.meta.itemCount - deliveryOrderCount) / 50,
       );
+      console.log(deliveryOrderCount);
+
+      for (let i = 1; i <= numDataToGet; i++) {
+        console.log(i);
+        try {
+          if (numDataToGet < 1) {
+            break;
+          }
+          console.log('data inserted');
+          const res = await api.get(
+            `delivery-order?order=DESC&page=${i}&take=50`,
+          );
+          const data = res.data.data;
+          await Promise.all(
+            data.map(async (item) => {
+              await this.inputDeliveryApp(item);
+              await this.inputTracking(item);
+            }),
+          );
+        } catch (err) {
+          console.log(err);
+          continue;
+        }
+      }
     } catch (error) {
       console.log(error.message);
     }

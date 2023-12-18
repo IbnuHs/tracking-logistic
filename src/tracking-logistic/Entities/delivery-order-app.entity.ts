@@ -6,7 +6,10 @@ export class DeliveryOrderTracking {
   @PrimaryColumn({ type: 'varchar', length: 40 })
   Oid: string;
 
-  @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo)
+  @ManyToOne(() => DeliveryOrder, (delivery) => delivery.OrderNo, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'OrderNo', referencedColumnName: 'OrderNo' })
   OrderNo: string;
 
