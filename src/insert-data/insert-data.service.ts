@@ -79,17 +79,13 @@ export class InsertDataService {
     try {
       const result = await api.get('delivery-order?order=DESC&page=1&take=50');
       const deliveryOrderCount = await this.deliveryOrderRepository.count();
-      const numDataToGet = Math.ceil(
-        (result.data.meta.itemCount - deliveryOrderCount) / 50,
-      );
+
+      const deliveryPageCount = result.data.meta.pageCount;
       console.log(deliveryOrderCount);
 
-      for (let i = 1; i <= numDataToGet; i++) {
+      for (let i = 1; i <= deliveryPageCount; i++) {
         console.log(i);
         try {
-          if (numDataToGet < 1) {
-            break;
-          }
           console.log('data inserted');
           const res = await api.get(
             `delivery-order?order=DESC&page=${i}&take=50`,
